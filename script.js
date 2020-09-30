@@ -31,7 +31,9 @@ function highlightService(serviceName) {
 // Set dimensions and margin
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
   width = 500 - margin.left - margin.right,
-  height = 500 - margin.top - margin.bottom;
+  height = 500 - margin.top - margin.bottom,
+  rectWidth = 120,
+  rectHeight = 42;
 
 // Append svg object
 var svg = d3
@@ -52,22 +54,24 @@ d3.json("data.json", function (data) {
     .style("stroke", "#aaa");
 
   // Initialize services
-  var service = svg
-    .selectAll("rect")
+  var service = svg.append("g")
+    .attr("class", "nodes")
+    .selectAll("g")
     .data(data.services)
     .enter()
-    .append("rect")
-    .attr("width", 120)
-    .attr("height", 20)
-    .style("fill", "#69b3a2");
+    .append("g")
 
-    var serviceLabels = svg
-        .selectAll("text.label")
-        .data(data.services)
-        .enter()
-        .append("text")
-        .attr("fill", "black")
-        .text(function(d) { return d.name; });
+  service.append("rect")
+    .attr("width", rectWidth)
+    .attr("height", rectHeight)
+    .attr("fill", "#74abed")
+    .attr("x", -(rectWidth / 2))
+    .attr("y", -(rectHeight / 2));
+  
+  service.append("text")
+    .attr("text-anchor", "middle")  
+    .attr("dominant-baseline", "middle")
+    .text(function(d) { return d.name; });
 
   // Let's list the force we wanna apply on the network
   var simulation = d3
@@ -76,7 +80,7 @@ d3.json("data.json", function (data) {
         d3.forceLink() // This force provides links between nodes
             .id(function (d) { return d.id; }) // This provide  the id of a node
             .links(data.dependencies) // and this the list of links     
-            .distance(75)       
+            .distance(100)       
     )
     .force("charge", d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
     .force("center", d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
@@ -97,17 +101,10 @@ d3.json("data.json", function (data) {
       .attr("y2", function (d) {
         return d.target.y;
       });
-
+    
     service
-      .attr("x", function (d) {
-        return d.x - 10;
-      })
-      .attr("y", function (d) {
-        return d.y - 10;
-      });
-
-      serviceLabels.attr("transform", function(d) {
-          return "translate(" + (d.x - 10) + "," + (d.y + 5) + ")";
+      .attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
       });
   }
 });
