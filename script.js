@@ -84,6 +84,7 @@ d3.json("data.json", function (data) {
     )
     .force("charge", d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
     .force("center", d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
+    .force("collision", d3.forceCollide(rectWidth))
     .on("end", ticked);
 
   // This function is run at each iteration of the force algorithm, updating the nodes position.
