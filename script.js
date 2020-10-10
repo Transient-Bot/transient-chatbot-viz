@@ -44,11 +44,20 @@ var svg = d3
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.json("data.json", function (data) {
+
+d3.queue()
+  .defer(d3.json, 'http://localhost:8000/api/services/')
+  .defer(d3.json, 'http://localhost:8000/api/dependencies/')
+  .await(createArchitectureGraph);
+
+function createArchitectureGraph(err, ...data) {
+  const serviceData = data[0];
+  const dependencyData = data[1];
+
   // Initialize dependencies
   var dependency = svg
     .selectAll("line")
-    .data(data.dependencies)
+    .data(dependencyData)
     .enter()
     .append("line")
     .style("stroke", "#aaa");
@@ -57,7 +66,7 @@ d3.json("data.json", function (data) {
   var service = svg.append("g")
     .attr("class", "nodes")
     .selectAll("g")
-    .data(data.services)
+    .data(serviceData)
     .enter()
     .append("g")
 
@@ -75,11 +84,11 @@ d3.json("data.json", function (data) {
 
   // Let's list the force we wanna apply on the network
   var simulation = d3
-    .forceSimulation(data.services) // Force algorithm is applied to data.nodes
+    .forceSimulation(serviceData) // Force algorithm is applied to data.nodes
     .force("link",
         d3.forceLink() // This force provides links between nodes
             .id(function (d) { return d.id; }) // This provide  the id of a node
-            .links(data.dependencies) // and this the list of links     
+            .links(dependencyData) // and this the list of links     
             .distance(100)       
     )
     .force("charge", d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
@@ -108,4 +117,4 @@ d3.json("data.json", function (data) {
         return "translate(" + d.x + "," + d.y + ")";
       });
   }
-});
+}
