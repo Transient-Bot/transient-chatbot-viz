@@ -19,7 +19,7 @@ socket.onclose = function (e) {
 };
 
 function highlightService(serviceName) {
-  d3.selectAll("rect").style("fill", "#69b3a2");
+  d3.selectAll("rect").style("fill", "#74abed");
 
   d3.selectAll("rect")
     .filter(function (d) {
@@ -46,8 +46,8 @@ var svg = d3
 
 
 d3.queue()
-  .defer(d3.json, 'http://localhost:8000/api/services/')
-  .defer(d3.json, 'http://localhost:8000/api/dependencies/')
+  .defer(d3.json, 'https://transient-chatbot-service.herokuapp.com/api/services/')
+  .defer(d3.json, 'https://transient-chatbot-service.herokuapp.com/api/dependencies/')
   .await(createArchitectureGraph);
 
 function createArchitectureGraph(err, ...data) {
