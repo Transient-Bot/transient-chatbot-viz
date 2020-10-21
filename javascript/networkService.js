@@ -30,14 +30,7 @@ function fetchDependencies() {
     );
 }
 
-function fetchServiceData(serviceId) {
-  var callId;
-  if (serviceId == 5) {
-    callId = 2;
-  } else {
-    callId = 5;
-  }
-
+function fetchServiceData(serviceId, callId) {
   fetch(
     'https://transient-chatbot-service.herokuapp.com/api/servicedata?service=' +
       serviceId +

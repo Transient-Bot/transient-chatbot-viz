@@ -105,10 +105,11 @@ function createDataGraph() {
   var dataSvg = d3
     .select('#data_viz')
     .append('svg')
+    .attr('id', 'data-svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
-    .attr('id', 'data-svg')
+    .attr('id', 'data-svg-g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
   // Add x axis
@@ -215,9 +216,6 @@ function createDataGraph() {
     focus.style('opacity', 0);
     focusText.style('opacity', 0);
   }
-
-  console.log("Data chart, Scale x(50): " + x(50));
-  console.log("Data chart, Scale y(50): " + y(50));
 }
 
 function drawSpecification(specification) {
@@ -250,7 +248,7 @@ function drawSpecification(specification) {
   data.push({qos: 100, time: endpoint});
   data.push({qos: 100, time: serviceData[serviceData.length - 1].time});
 
-  d3.select('#data-svg')
+  d3.select('#data-svg-g')
     .append('path')
     .datum(data)
     .attr('fill', 'none')
@@ -296,9 +294,6 @@ function drawSpecification(specification) {
 
     return minimum;
   }
-
-  console.log("Specification chart, Scale x(50): " + x(50));
-  console.log("Specification chart, Scale y(50): " + y(50));
 }
 
 // Draws a histogram of the resilience loss
@@ -310,10 +305,11 @@ function drawTransientLossGraph() {
   var lossSvg = d3
     .select('#loss_viz')
     .append('svg')
+    .attr('id', 'loss-svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
     .append('g')
-    .attr('id', 'loss-svg')
+    .attr('id', 'loss-svg-g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
   // Add x axis

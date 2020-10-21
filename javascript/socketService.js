@@ -30,6 +30,7 @@ function highlightService(serviceName) {
   });
   
   var service = filteredServices[0];
-  fetchServiceData(service.id);
-  fetchSpecification(service.id, 'failure');
+  selectedService = service;
+
+  populateEndpointsSelect(service);
 }
