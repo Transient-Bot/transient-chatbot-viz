@@ -1,5 +1,5 @@
 function fetchServices() {
-  fetch("https://transient-chatbot-service.herokuapp.com/api/services/")
+  fetch('https://transient-chatbot-service.herokuapp.com/api/services/')
     .then((res) => res.json())
     .then(
       (result) => {
@@ -9,13 +9,13 @@ function fetchServices() {
         }
       },
       (error) => {
-        console.log("Error while fetching services: " + error);
+        console.log('Error while fetching services: ' + error);
       }
     );
 }
 
 function fetchDependencies() {
-  fetch("https://transient-chatbot-service.herokuapp.com/api/dependencies/")
+  fetch('https://transient-chatbot-service.herokuapp.com/api/dependencies/')
     .then((res) => res.json())
     .then(
       (result) => {
@@ -25,7 +25,7 @@ function fetchDependencies() {
         }
       },
       (error) => {
-        console.log("Error while fetching dependencies: " + error);
+        console.log('Error while fetching dependencies: ' + error);
       }
     );
 }
@@ -39,9 +39,9 @@ function fetchServiceData(serviceId) {
   }
 
   fetch(
-    "https://transient-chatbot-service.herokuapp.com/api/servicedata?service=" +
+    'https://transient-chatbot-service.herokuapp.com/api/servicedata?service=' +
       serviceId +
-      "&callid=" +
+      '&callid=' +
       callId
   )
     .then((res) => res.json())
@@ -57,9 +57,9 @@ function fetchServiceData(serviceId) {
       },
       (error) => {
         console.log(
-          "Error while fetching service data for service " +
+          'Error while fetching service data for service ' +
             serviceId +
-            ": " +
+            ': ' +
             error
         );
       }
@@ -68,9 +68,9 @@ function fetchServiceData(serviceId) {
 
 function fetchSpecification(serviceId, cause) {
   fetch(
-    "https://transient-chatbot-service.herokuapp.com/api/specifications?service=" +
+    'https://transient-chatbot-service.herokuapp.com/api/specifications?service=' +
       serviceId +
-      "&cause=" +
+      '&cause=' +
       cause
   )
     .then((res) => res.json())
@@ -83,11 +83,11 @@ function fetchSpecification(serviceId, cause) {
       },
       (error) => {
         console.log(
-          "Error while fetching specification for service " +
+          'Error while fetching specification for service ' +
             serviceId +
-            " and cause " +
+            ' and cause ' +
             cause +
-            ": " +
+            ': ' +
             error
         );
       }
