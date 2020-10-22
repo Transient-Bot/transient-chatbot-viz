@@ -18,40 +18,42 @@
 
     <div class="container-fluid">
         <!-- Architecture visualization -->
-        <div class="row">
-            <div class="col">
-                <div id="arch_viz"></div>
+        <div class="viz-container">
+            <div class="row">
+                <div class="col">
+                    <div id="arch_viz"></div>
+                </div>
             </div>
         </div>
-        
-        <hr>
 
         <!-- Service data visualization -->
-        <div class="row">
-            <div class="col">
-                <label for="endpoints">Endpoint:</label>
-                <select name="endpoints" id="endpoints"></select>
+        <div class="viz-container data-viz-container" id="service-viz-container">
+            <div class="row">
+                <div class="col-auto">
+                    <label for="endpoints">Endpoint:</label>
+                    <select name="endpoints" id="endpoints"></select>
+                </div>
+                <div class="col-auto">
+                    <label for="causes">Cause:</label>
+                    <select name="causes" id="causes">
+                        <option value="failure">Failure</option>
+                        <option value="deployment">Deployment</option>
+                    </select>
+                </div>
             </div>
-            <div class="col">
-                <label for="causes">Cause:</label>
-                <select name="causes" id="causes">
-                    <option value="failure">Failure</option>
-                    <option value="deployment">Deployment</option>
-                </select>
+            <div class="row">
+                <div class="col">
+                    <div id="data_viz"></div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <div id="data_viz"></div>
-            </div>
-        </div>
-
-        <hr>
 
         <!-- Transient loos visualization -->
-        <div class="row">  
-            <div class="col"> 
-                <div id="loss_viz"></div>
+        <div class="viz-container data-viz-container" id="loss-viz-container">
+            <div class="row">
+                <div class="col">
+                    <div id="loss_viz"></div>
+                </div>
             </div>
         </div>
     </div>

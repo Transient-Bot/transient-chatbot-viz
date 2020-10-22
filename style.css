@@ -5,3 +5,15 @@ text {
 hr {
     border: 1px solid lightgray;
 }
+
+.viz-container {
+    border: 1px solid lightgray;
+    border-radius: 3px;
+    padding: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.data-viz-container {
+    display: none;
+}

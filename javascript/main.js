@@ -15,16 +15,18 @@ const socket = new WebSocket(
 fetchServices();
 fetchDependencies();
 
-// Change service data visualization when another endpoint is selected
+// Change service data visualization when an endpoint is selected
 document.getElementById('endpoints').addEventListener('change', (e) => {
   const callId = e.target.value;
   fetchServiceData(selectedService.id, callId);
   fetchSpecification(selectedService.id, 'failure');
 });
 
-// 
+// Adds options to endpoint select
 function populateEndpointsSelect(service) {
   if (service === null || service.endpoints === null) { return; }
+
+  toggleDataVizContainer();
 
   var select = document.getElementById('endpoints');
   select.options.length = 0;
@@ -47,4 +49,12 @@ function populateEndpointsSelect(service) {
   // Select the first value
   select.value = select.options[0].value;
   select.dispatchEvent(new Event('change'));
+}
+
+function toggleDataVizContainer() {
+  var serviceContainer = document.getElementById('service-viz-container');
+  var lossContainer = document.getElementById('loss-viz-container');
+
+  serviceContainer.style.display = 'block';
+  lossContainer.style.display = 'block';
 }

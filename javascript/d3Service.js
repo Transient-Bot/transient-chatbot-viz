@@ -147,7 +147,7 @@ function createDataGraph() {
   dataSvg
     .append('path')
     .datum(serviceData)
-    .attr('fill', '#98c4ed')
+    .attr('fill', 'rgba(116,171,237,0.2)')
     .attr('stroke', 'steelblue')
     .attr('stroke-width', 1.0)
     .attr(
@@ -167,7 +167,8 @@ function createDataGraph() {
   var focus = dataSvg
     .append('g')
     .append('circle')
-    .style('fill', 'steelblue')
+    .style('fill', 'rgba(116,171,237,0.2)')
+    .style('stroke', 'steelblue')
     .attr('r', 3.5)
     .style('opacity', 0);
 
@@ -320,7 +321,6 @@ function drawTransientLossGraph() {
       })
     )
     .range([0, width]); 
-    // .padding(0.2)
 
   lossSvg
     .append('g')
