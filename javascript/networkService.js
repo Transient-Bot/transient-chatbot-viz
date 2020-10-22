@@ -1,5 +1,5 @@
 function fetchServices() {
-  fetch('https://transient-chatbot-service.herokuapp.com/api/services/')
+  fetch(baseUrl + servicesPath)
     .then((res) => res.json())
     .then(
       (result) => {
@@ -15,7 +15,7 @@ function fetchServices() {
 }
 
 function fetchDependencies() {
-  fetch('https://transient-chatbot-service.herokuapp.com/api/dependencies/')
+  fetch(baseUrl + dependenciesPath)
     .then((res) => res.json())
     .then(
       (result) => {
@@ -32,10 +32,7 @@ function fetchDependencies() {
 
 function fetchServiceData(serviceId, callId) {
   fetch(
-    'https://transient-chatbot-service.herokuapp.com/api/servicedata?service=' +
-      serviceId +
-      '&callid=' +
-      callId
+    baseUrl + serviceDataPath + '?service=' + serviceId + '&callid=' + callId
   )
     .then((res) => res.json())
     .then(
@@ -58,16 +55,13 @@ function fetchServiceData(serviceId, callId) {
 
 function fetchSpecification(serviceId, cause) {
   fetch(
-    'https://transient-chatbot-service.herokuapp.com/api/specifications?service=' +
-      serviceId +
-      '&cause=' +
-      cause
+    baseUrl + specificationsPath + '?service=' + serviceId + '&cause=' + cause
   )
     .then((res) => res.json())
     .then(
       (result) => {
-          specification = result[0];
-          handleSpecification();
+        specification = result[0];
+        handleSpecification();
       },
       (error) => {
         console.log(
@@ -80,4 +74,14 @@ function fetchSpecification(serviceId, cause) {
         );
       }
     );
+}
+
+function deleteSpecificationRequest(specificationId) {
+  fetch(baseUrl + specificationsPath + specificationId + '/', {
+    method: 'DELETE'
+  })
+    .then(
+      (response) => {
+        console.log(response);
+    })
 }

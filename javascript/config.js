@@ -1,3 +1,9 @@
+const baseUrl = 'https://transient-chatbot-service.herokuapp.com/api/';
+const servicesPath = 'services/';
+const dependenciesPath = 'dependencies/';
+const serviceDataPath = 'servicedata/';
+const specificationsPath = 'specifications/';
+
 const expected_qos = 100;
 
 const Intent = {
