@@ -80,8 +80,4 @@ function deleteSpecificationRequest(specificationId) {
   fetch(baseUrl + specificationsPath + specificationId + '/', {
     method: 'DELETE'
   })
-    .then(
-      (response) => {
-        console.log(response);
-    })
 }
