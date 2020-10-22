@@ -44,9 +44,6 @@ function fetchServiceData(serviceId, callId) {
         if (serviceData != null) {
           createDataGraph();
         }
-        if (specification != null) {
-            drawSpecification(specification);
-        }
       },
       (error) => {
         console.log(
@@ -70,9 +67,7 @@ function fetchSpecification(serviceId, cause) {
     .then(
       (result) => {
           specification = result[0];
-          if (serviceData != null && specification != null) {
-            drawSpecification(specification);
-          }
+          handleSpecification();
       },
       (error) => {
         console.log(

@@ -133,7 +133,7 @@ function createDataGraph() {
     .call(d3.axisBottom(x));
 
   // Add y axis
-  y = d3.scaleLinear().domain([0, 100]).range([height, 0]).nice();
+  y = d3.scaleLinear().domain([0, 110]).range([height, 0]).nice();
   dataSvg
     .append("g")
     .attr("class", "grid")
@@ -195,61 +195,6 @@ function createDataGraph() {
   // Add brush
   lineChart.append("g").attr("class", "brush").call(brush);
 
-  // // Creat rect on top of svg that covers mouse position
-  // dataSvg
-  //   .append("rect")
-  //   .style("fill", "none")
-  //   .style("pointer-events", "all")
-  //   .attr("width", width)
-  //   .attr("height", height)
-  //   .on("mouseover", mouseover)
-  //   .on("mousemove", mousemove)
-  //   .on("mouseout", mouseout);
-
-  // // Create circle that travels along chart
-  // var focus = dataSvg
-  //   .append("g")
-  //   .append("circle")
-  //   .style("fill", "rgba(116,171,237,0.1)")
-  //   .style("stroke", "steelblue")
-  //   .attr("r", 3.5)
-  //   .style("opacity", 0);
-
-  // // Create text that travels along chart curve
-  // var focusText = dataSvg
-  //   .append("g")
-  //   .append("text")
-  //   .style("opacity", 0)
-  //   .attr("text-anchor", "left")
-  //   .attr("alignment-baseline", "middle");
-
-  // // What happens when the mouse move -> show the annotations at the right positions.
-  // function mouseover() {
-  //   focus.style("opacity", 1);
-  //   focusText.style("opacity", 1);
-  // }
-
-  // function mousemove() {
-  //   // recover coordinate we need
-  //   var x0 = x.invert(d3.mouse(this)[0]);
-  //   var i = bisect(serviceData, x0, 1);
-  //   selectedData = serviceData[i];
-  //   focus.attr("cx", x(selectedData.time)).attr("cy", y(selectedData.qos));
-  //   focusText
-  //     .html(
-  //       parseFloat(selectedData.time).toFixed(1) +
-  //         ", " +
-  //         parseFloat(selectedData.qos).toFixed(0)
-  //     )
-  //     .attr("x", x(selectedData.time) + 15)
-  //     .attr("y", y(selectedData.qos));
-  // }
-
-  // function mouseout() {
-  //   focus.style("opacity", 0);
-  //   focusText.style("opacity", 0);
-  // }
-
   var idleTimeout;
   function idled() {
     idleTimeout = null;
@@ -310,6 +255,11 @@ function createDataGraph() {
           })
       );
   }
+
+  if (specificationIsHidden === false) {   
+    var cause = document.getElementById('causes').value;         
+    fetchSpecification(selectedService.id, cause);
+  }
 }
 
 function drawSpecification(specification) {
@@ -331,7 +281,7 @@ function drawSpecification(specification) {
         var initialLoss = getInitialLoss(i);
         data.push({ qos: 100, time: initialLoss.time });
         data.push({
-          qos: parseFloat(max_initial_loss),
+          qos: parseFloat(100 - max_initial_loss),
           time: initialLoss.time,
         });
         break;
@@ -351,7 +301,7 @@ function drawSpecification(specification) {
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", "red")
-    .attr("stroke-width", 1.0)
+    .attr("stroke-width", 2.0)
     .attr(
       "d",
       d3
@@ -366,7 +316,7 @@ function drawSpecification(specification) {
 
   function isInitialLoss(index, max_initial_loss) {
     const lastIndex =
-      serviceData.length >= index + 10 ? index + 10 : serviceData.length - 1;
+      serviceData.length >= index + 5 ? index + 5 : serviceData.length - 1;
     var nextValues = serviceData.slice(index, lastIndex);
     var qosValues = nextValues.map((service) => service.qos);
     var avg = qosValues.reduce((a, b) => a + b) / qosValues.length;
@@ -380,7 +330,7 @@ function drawSpecification(specification) {
 
   function getInitialLoss(index) {
     const lastIndex =
-      serviceData.length >= index + 10 ? index + 10 : serviceData.length - 1;
+      serviceData.length >= index + 5 ? index + 5 : serviceData.length - 1;
     var nextValues = serviceData.slice(index, lastIndex);
 
     var minimum = serviceData[index];
@@ -392,6 +342,11 @@ function drawSpecification(specification) {
 
     return minimum;
   }
+}
+
+function removeSpecificationPath() {
+  d3.selectAll('#specification-line').remove();
+  specification = null;
 }
 
 // Draws a histogram of the resilience loss

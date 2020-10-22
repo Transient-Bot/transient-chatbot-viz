@@ -1,10 +1,9 @@
-const expected_qos = 100;
-
 var services;
 var dependencies;
 var serviceData;
 var specification;
 var selectedService;
+var specificationIsHidden = true;
 
 // Open websocket
 const socket = new WebSocket(
@@ -19,7 +18,13 @@ fetchDependencies();
 document.getElementById('endpoints').addEventListener('change', (e) => {
   const callId = e.target.value;
   fetchServiceData(selectedService.id, callId);
-  fetchSpecification(selectedService.id, 'failure');
+});
+
+// Change specification visualization when a cause for transient behavior is selected
+document.getElementById('causes').addEventListener('change', (e) => {
+  const cause = e.target.value;
+  removeSpecificationPath();
+  fetchSpecification(selectedService.id, cause);
 });
 
 // Adds options to endpoint select
@@ -51,10 +56,75 @@ function populateEndpointsSelect(service) {
   select.dispatchEvent(new Event('change'));
 }
 
+// Show the transient behavior specification
+function showSpecification(tb_cause) {
+  var btn = document.getElementById('specification-toggle');
+  var causesContainer = document.getElementById('causes-select-container');
+  var cause = document.getElementById('causes').value;
+
+  if (tb_cause !== null) {
+    cause = tb_cause;
+    document.getElementById('causes').value = tb_cause;
+  }
+  
+  causesContainer.style.display = 'flex';
+  btn.innerHTML = 'Hide specification';
+  specificationIsHidden = false;
+
+  removeSpecificationPath();
+  fetchSpecification(selectedService.id, cause);
+}
+
+function hideSpecification() {
+  var btn = document.getElementById('specification-toggle');
+  var addBtn = document.getElementById('addSpecBtn');
+  var deleteBtn = document.getElementById('deleteSpecBtn');
+  var editBtn = document.getElementById('editSpecBtn');
+  var causesContainer = document.getElementById('causes-select-container');
+
+  causesContainer.style.display = 'none';
+  addBtn.style.display = 'none';
+  deleteBtn.style.display = 'none';
+  editBtn.style.display = 'none';
+  btn.innerHTML = 'Show specification';
+  specificationIsHidden = true;
+  removeSpecificationPath(); 
+}
+
+// Toggle the transient behavior specification visualization
+function toggleSpecification() {
+  var btn = document.getElementById('specification-toggle');
+
+  if (btn.innerHTML === 'Show specification') {
+    showSpecification(null);
+  } else {
+    hideSpecification();
+  }
+}
+
+// Show data viz containers
 function toggleDataVizContainer() {
   var serviceContainer = document.getElementById('service-viz-container');
   var lossContainer = document.getElementById('loss-viz-container');
 
   serviceContainer.style.display = 'block';
   lossContainer.style.display = 'block';
+}
+
+function handleSpecification() {
+  var deleteBtn = document.getElementById('deleteSpecBtn');
+  var editBtn = document.getElementById('editSpecBtn');
+  var addBtn = document.getElementById('addSpecBtn');
+
+  if (serviceData != null && specification != null && specification != undefined) {
+    deleteBtn.style.display = 'inline';
+    editBtn.style.display = 'inline';
+    addBtn.style.display = 'none';
+
+    drawSpecification(specification);
+  } else if (specification === null || specification == undefined) {
+    addBtn.style.display = 'inline';
+    deleteBtn.style.display = 'none';
+    editBtn.style.display = 'none';
+  }
 }

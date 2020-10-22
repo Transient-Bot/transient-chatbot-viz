@@ -4,6 +4,21 @@ socket.onmessage = function (e) {
   const params = data.params;
   console.log('Received intent: ' + intent + ' with param: ' + params);
 
+  if (intent === null || params === null) { return; } 
+  
+  switch (intent) {
+    case Intent.SELECT_SERVICE:
+      if (params.service_name !== null) {
+        highlightService(params.service_name);  
+      }  
+      break;
+    case Intent.SHOW_SPECIFIACTION: 
+      showSpecification(params.tb_cause);
+      break;
+    default:
+      break;
+  }
+  
   if (intent === 'Select Service' && params !== null && params.service_name !== null) {
     highlightService(params.service_name);
   }

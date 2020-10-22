@@ -2,8 +2,8 @@ text {
     font-family: sans-serif
 }
 
-hr {
-    border: 1px solid lightgray;
+.nodes:hover {
+    cursor: pointer;
 }
 
 .grid line {
@@ -22,4 +22,45 @@ hr {
 
 .data-viz-container {
     display: none;
+}
+
+#causes-select-container {
+    display: none;
+}
+
+.col-form-label {
+    margin-right: 12px;
+}
+
+.btn-add {
+    background-color: green !important;
+    border-color: green !important;
+    display: none;
+}
+
+.btn-delete {
+    background-color: red !important;
+    border-color: red !important;
+    display: none;
+}
+
+.btn-edit {
+    background-color: orange !important;
+    border-color: orange !important;
+    display: none;
+}
+
+.btn-add:hover {
+    background-color: darkgreen !important;
+    border-color: darkgreen !important;
+}
+
+.btn-delete:hover {
+    background-color: darkred !important;
+    border-color: darkred !important;
+}
+
+.btn-edit:hover {
+    background-color: darkorange !important;
+    border-color: darkorange !important;
 }
