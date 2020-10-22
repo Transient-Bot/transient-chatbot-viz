@@ -124,6 +124,11 @@ function createDataGraph() {
     .nice();
   dataSvg
     .append('g')
+    .attr('class', 'grid')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(d3.axisBottom(x).tickSize(-height).tickFormat(''));
+  dataSvg
+    .append('g')
     .attr('transform', 'translate(0,' + height + ')')
     .call(d3.axisBottom(x));
 
@@ -136,6 +141,10 @@ function createDataGraph() {
     ])
     .range([height, 0])
     .nice();
+  dataSvg
+    .append('g')
+    .attr('class', 'grid')
+    .call(d3.axisLeft(y).tickSize(-width).tickFormat(''));
   dataSvg.append('g').call(d3.axisLeft(y));
 
   // Get closest x index of mouse
@@ -167,7 +176,7 @@ function createDataGraph() {
   var focus = dataSvg
     .append('g')
     .append('circle')
-    .style('fill', 'rgba(116,171,237,0.2)')
+    .style('fill', 'rgba(116,171,237,0.1)')
     .style('stroke', 'steelblue')
     .attr('r', 3.5)
     .style('opacity', 0);

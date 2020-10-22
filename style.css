@@ -6,6 +6,12 @@ hr {
     border: 1px solid lightgray;
 }
 
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
 .viz-container {
     border: 1px solid lightgray;
     border-radius: 3px;
