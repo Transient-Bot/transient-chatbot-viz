@@ -11,44 +11,44 @@ var y;
 function createArchitectureGraph() {
   // Append svg object
   var archSvg = d3
-    .select('#arch_viz')
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    .select("#arch_viz")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Initialize dependencies
   var dependency = archSvg
-    .selectAll('line')
+    .selectAll("line")
     .data(dependencies)
     .enter()
-    .append('line')
-    .style('stroke', '#aaa');
+    .append("line")
+    .style("stroke", "#aaa");
 
   // Initialize services
   var service = archSvg
-    .append('g')
-    .attr('class', 'nodes')
-    .selectAll('g')
+    .append("g")
+    .attr("class", "nodes")
+    .selectAll("g")
     .data(services)
     .enter()
-    .append('g')
-    .on('click', selectService);
+    .append("g")
+    .on("click", selectService);
 
   service
-    .append('rect')
-    .attr('id', 'service-rect')
-    .attr('width', rectWidth)
-    .attr('height', rectHeight)
-    .attr('fill', '#74abed')
-    .attr('x', -(rectWidth / 2))
-    .attr('y', -(rectHeight / 2));
+    .append("rect")
+    .attr("id", "service-rect")
+    .attr("width", rectWidth)
+    .attr("height", rectHeight)
+    .attr("fill", "#74abed")
+    .attr("x", -(rectWidth / 2))
+    .attr("y", -(rectHeight / 2));
 
   service
-    .append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dominant-baseline', 'middle')
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
     .text(function (d) {
       return d.name;
     });
@@ -57,7 +57,7 @@ function createArchitectureGraph() {
   var simulation = d3
     .forceSimulation(services) // Force algorithm is applied to data.nodes
     .force(
-      'link',
+      "link",
       d3
         .forceLink() // This force provides links between nodes
         .id(function (d) {
@@ -66,29 +66,29 @@ function createArchitectureGraph() {
         .links(dependencies) // and this the list of links
         .distance(100)
     )
-    .force('charge', d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
-    .force('center', d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
-    .force('collision', d3.forceCollide(rectWidth))
-    .on('end', ticked);
+    .force("charge", d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+    .force("center", d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
+    .force("collision", d3.forceCollide(rectWidth))
+    .on("end", ticked);
 
   // This function is run at each iteration of the force algorithm, updating the nodes position.
   function ticked() {
     dependency
-      .attr('x1', function (d) {
+      .attr("x1", function (d) {
         return d.source.x;
       })
-      .attr('y1', function (d) {
+      .attr("y1", function (d) {
         return d.source.y;
       })
-      .attr('x2', function (d) {
+      .attr("x2", function (d) {
         return d.target.x;
       })
-      .attr('y2', function (d) {
+      .attr("y2", function (d) {
         return d.target.y;
       });
 
-    service.attr('transform', function (d) {
-      return 'translate(' + d.x + ',' + d.y + ')';
+    service.attr("transform", function (d) {
+      return "translate(" + d.x + "," + d.y + ")";
     });
   }
 
@@ -99,18 +99,18 @@ function createArchitectureGraph() {
 
 function createDataGraph() {
   // Remove old graphs
-  d3.selectAll('#data-svg').remove();
+  d3.selectAll("#data-svg").remove();
 
   // Append svg object
   var dataSvg = d3
-    .select('#data_viz')
-    .append('svg')
-    .attr('id', 'data-svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('id', 'data-svg-g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    .select("#data_viz")
+    .append("svg")
+    .attr("id", "data-svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("id", "data-svg-g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add x axis
   x = d3
@@ -122,45 +122,65 @@ function createDataGraph() {
     )
     .range([0, width])
     .nice();
-  dataSvg
-    .append('g')
-    .attr('class', 'grid')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(d3.axisBottom(x).tickSize(-height).tickFormat(''));
-  dataSvg
-    .append('g')
-    .attr('transform', 'translate(0,' + height + ')')
+  var xGrid = dataSvg
+    .append("g")
+    .attr("class", "grid")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSize(-height).tickFormat(""));
+  var xAxis = dataSvg
+    .append("g")
+    .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x));
 
   // Add y axis
-  y = d3
-    .scaleLinear()
-    .domain([
-        0,
-        100
-    ])
-    .range([height, 0])
-    .nice();
+  y = d3.scaleLinear().domain([0, 100]).range([height, 0]).nice();
   dataSvg
-    .append('g')
-    .attr('class', 'grid')
-    .call(d3.axisLeft(y).tickSize(-width).tickFormat(''));
-  dataSvg.append('g').call(d3.axisLeft(y));
+    .append("g")
+    .attr("class", "grid")
+    .call(d3.axisLeft(y).tickSize(-width).tickFormat(""));
+  dataSvg.append("g").call(d3.axisLeft(y));
 
   // Get closest x index of mouse
   var bisect = d3.bisector(function (d) {
     return d.time;
   }).left;
 
+
+  // Add clip path
+  var clip = dataSvg
+    .append("defs")
+    .append("svg:clipPath")
+    .attr("id", "clip")
+    .append("svg:rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("x", 0)
+    .attr("y", 0);
+
+  // Create brush
+  var brush = d3
+    .brushX()
+    .extent([
+      [0, 0],
+      [width, height],
+    ])
+    .on("end", updateChart);
+
+  var lineChart = dataSvg
+    .append('g')
+    .attr('clip-path', "url(#clip)")
+    .attr('id', 'line-chart');
+
   // Add line
-  dataSvg
-    .append('path')
+  lineChart
+    .append("path")
+    .attr('id', 'data-line')
     .datum(serviceData)
-    .attr('fill', 'rgba(116,171,237,0.2)')
-    .attr('stroke', 'steelblue')
-    .attr('stroke-width', 1.0)
+    .attr("fill", "rgba(116,171,237,0.2)")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.0)
     .attr(
-      'd',
+      "d",
       d3
         .area()
         .x(function (d) {
@@ -172,59 +192,123 @@ function createDataGraph() {
         })
     );
 
-  // Create circle that travels along chart
-  var focus = dataSvg
-    .append('g')
-    .append('circle')
-    .style('fill', 'rgba(116,171,237,0.1)')
-    .style('stroke', 'steelblue')
-    .attr('r', 3.5)
-    .style('opacity', 0);
+  // Add brush
+  lineChart.append("g").attr("class", "brush").call(brush);
 
-  // Create text that travels along chart curve
-  var focusText = dataSvg
-    .append('g')
-    .append('text')
-    .style('opacity', 0)
-    .attr('text-anchor', 'left')
-    .attr('alignment-baseline', 'middle');
+  // // Creat rect on top of svg that covers mouse position
+  // dataSvg
+  //   .append("rect")
+  //   .style("fill", "none")
+  //   .style("pointer-events", "all")
+  //   .attr("width", width)
+  //   .attr("height", height)
+  //   .on("mouseover", mouseover)
+  //   .on("mousemove", mousemove)
+  //   .on("mouseout", mouseout);
 
-  // Creat rect on top of svg that covers mouse position
-  dataSvg
-    .append('rect')
-    .style('fill', 'none')
-    .style('pointer-events', 'all')
-    .attr('width', width)
-    .attr('height', height)
-    .on('mouseover', mouseover)
-    .on('mousemove', mousemove)
-    .on('mouseout', mouseout);
+  // // Create circle that travels along chart
+  // var focus = dataSvg
+  //   .append("g")
+  //   .append("circle")
+  //   .style("fill", "rgba(116,171,237,0.1)")
+  //   .style("stroke", "steelblue")
+  //   .attr("r", 3.5)
+  //   .style("opacity", 0);
 
-  // What happens when the mouse move -> show the annotations at the right positions.
-  function mouseover() {
-    focus.style('opacity', 1);
-    focusText.style('opacity', 1);
+  // // Create text that travels along chart curve
+  // var focusText = dataSvg
+  //   .append("g")
+  //   .append("text")
+  //   .style("opacity", 0)
+  //   .attr("text-anchor", "left")
+  //   .attr("alignment-baseline", "middle");
+
+  // // What happens when the mouse move -> show the annotations at the right positions.
+  // function mouseover() {
+  //   focus.style("opacity", 1);
+  //   focusText.style("opacity", 1);
+  // }
+
+  // function mousemove() {
+  //   // recover coordinate we need
+  //   var x0 = x.invert(d3.mouse(this)[0]);
+  //   var i = bisect(serviceData, x0, 1);
+  //   selectedData = serviceData[i];
+  //   focus.attr("cx", x(selectedData.time)).attr("cy", y(selectedData.qos));
+  //   focusText
+  //     .html(
+  //       parseFloat(selectedData.time).toFixed(1) +
+  //         ", " +
+  //         parseFloat(selectedData.qos).toFixed(0)
+  //     )
+  //     .attr("x", x(selectedData.time) + 15)
+  //     .attr("y", y(selectedData.qos));
+  // }
+
+  // function mouseout() {
+  //   focus.style("opacity", 0);
+  //   focusText.style("opacity", 0);
+  // }
+
+  var idleTimeout;
+  function idled() {
+    idleTimeout = null;
   }
 
-  function mousemove() {
-    // recover coordinate we need
-    var x0 = x.invert(d3.mouse(this)[0]);
-    var i = bisect(serviceData, x0, 1);
-    selectedData = serviceData[i];
-    focus.attr('cx', x(selectedData.time)).attr('cy', y(selectedData.qos));
-    focusText
-      .html(
-        parseFloat(selectedData.time).toFixed(1) +
-          ', ' +
-          parseFloat(selectedData.qos).toFixed(0)
+  function updateChart() {
+    extent = d3.event.selection;
+
+    // Update domain
+    if(!extent){
+      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+      x.domain(
+        d3.extent(serviceData, function (d) {
+          return d.time;
+        })
       )
-      .attr('x', x(selectedData.time) + 15)
-      .attr('y', y(selectedData.qos));
-  }
+    } else {
+      x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+      lineChart.select(".brush").call(brush.move, null);
+    }
 
-  function mouseout() {
-    focus.style('opacity', 0);
-    focusText.style('opacity', 0);
+    // Update axis and line
+    xGrid.transition().duration(1000).call(d3.axisBottom(x).tickSize(-height).tickFormat(""));
+    xAxis.transition().duration(1000).call(d3.axisBottom(x));
+
+    // Update data line
+    lineChart
+      .select("#data-line")
+      .transition()
+      .duration(1000)
+      .attr(
+        "d",
+        d3
+          .area()
+          .x(function (d) {
+            return x(d.time);
+          })
+          .y0(y(0))
+          .y1(function (d) {
+            return y(d.qos);
+          })
+      );
+    
+    // Update specification line
+    lineChart
+      .select('#specification-line')
+      .transition()
+      .duration(1000)
+      .attr(
+        "d",
+        d3
+          .line()
+          .x(function (d) {
+            return x(d.time);
+          })
+          .y(function (d) {
+            return y(d.qos);
+          })
+      );
   }
 }
 
@@ -246,7 +330,10 @@ function drawSpecification(specification) {
       if (isInitialLoss(i, max_initial_loss)) {
         var initialLoss = getInitialLoss(i);
         data.push({ qos: 100, time: initialLoss.time });
-        data.push({ qos: parseFloat(max_initial_loss), time: initialLoss.time });
+        data.push({
+          qos: parseFloat(max_initial_loss),
+          time: initialLoss.time,
+        });
         break;
       }
     }
@@ -255,17 +342,18 @@ function drawSpecification(specification) {
   var startpoint = parseFloat(data[data.length - 1].time);
   var endpoint = startpoint + parseFloat(max_recovery_time);
 
-  data.push({qos: 100, time: endpoint});
-  data.push({qos: 100, time: serviceData[serviceData.length - 1].time});
+  data.push({ qos: 100, time: endpoint });
+  data.push({ qos: 100, time: serviceData[serviceData.length - 1].time });
 
-  d3.select('#data-svg-g')
-    .append('path')
+  d3.select("#line-chart")
+    .append("path")
+    .attr('id', 'specification-line')
     .datum(data)
-    .attr('fill', 'none')
-    .attr('stroke', 'red')
-    .attr('stroke-width', 1.0)
+    .attr("fill", "none")
+    .attr("stroke", "red")
+    .attr("stroke-width", 1.0)
     .attr(
-      'd',
+      "d",
       d3
         .line()
         .x(function (d) {
@@ -309,45 +397,40 @@ function drawSpecification(specification) {
 // Draws a histogram of the resilience loss
 function drawTransientLossGraph() {
   // Remove old graphs
-  d3.selectAll('#loss-svg').remove();
+  d3.selectAll("#loss-svg").remove();
 
   // Append svg object
   var lossSvg = d3
-    .select('#loss_viz')
-    .append('svg')
-    .attr('id', 'loss-svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-    .append('g')
-    .attr('id', 'loss-svg-g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    .select("#loss_viz")
+    .append("svg")
+    .attr("id", "loss-svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("id", "loss-svg-g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add x axis
-  var xAxis = d3.scaleBand()
+  var xAxis = d3
+    .scaleBand()
     .domain(
       d3.extent(serviceData, function (d) {
         return d.time;
       })
     )
-    .range([0, width]); 
+    .range([0, width]);
 
   lossSvg
-    .append('g')
-    .attr('transform', 'translate(0,' + height + ')')
+    .append("g")
+    .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x));
 
   // Add y axis
-  var y = d3
-    .scaleLinear()
-    .domain([
-      0,
-      100
-    ])
-    .range([height, 0])
+  var y = d3.scaleLinear().domain([0, 100]).range([height, 0]);
 
-    lossSvg.append('g').call(d3.axisLeft(y));
+  lossSvg.append("g").call(d3.axisLeft(y));
 
-    // function createResilienceLossData(input) {
+  // function createResilienceLossData(input) {
 
-    // }
+  // }
 }
