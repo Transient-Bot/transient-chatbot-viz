@@ -9,7 +9,7 @@ function fetchServices() {
         }
       },
       (error) => {
-        console.log('Error while fetching services: ' + error);
+        console.log("Error while fetching services: " + error);
       }
     );
 }
@@ -25,14 +25,14 @@ function fetchDependencies() {
         }
       },
       (error) => {
-        console.log('Error while fetching dependencies: ' + error);
+        console.log("Error while fetching dependencies: " + error);
       }
     );
 }
 
 function fetchServiceData(serviceId, callId) {
   fetch(
-    baseUrl + serviceDataPath + '?service=' + serviceId + '&callid=' + callId
+    baseUrl + serviceDataPath + "?service=" + serviceId + "&callid=" + callId
   )
     .then((res) => res.json())
     .then(
@@ -44,9 +44,9 @@ function fetchServiceData(serviceId, callId) {
       },
       (error) => {
         console.log(
-          'Error while fetching service data for service ' +
+          "Error while fetching service data for service " +
             serviceId +
-            ': ' +
+            ": " +
             error
         );
       }
@@ -55,7 +55,7 @@ function fetchServiceData(serviceId, callId) {
 
 function fetchSpecification(serviceId, cause) {
   fetch(
-    baseUrl + specificationsPath + '?service=' + serviceId + '&cause=' + cause
+    baseUrl + specificationsPath + "?service=" + serviceId + "&cause=" + cause
   )
     .then((res) => res.json())
     .then(
@@ -65,11 +65,11 @@ function fetchSpecification(serviceId, cause) {
       },
       (error) => {
         console.log(
-          'Error while fetching specification for service ' +
+          "Error while fetching specification for service " +
             serviceId +
-            ' and cause ' +
+            " and cause " +
             cause +
-            ': ' +
+            ": " +
             error
         );
       }
@@ -77,7 +77,47 @@ function fetchSpecification(serviceId, cause) {
 }
 
 function deleteSpecificationRequest(specificationId) {
-  fetch(baseUrl + specificationsPath + specificationId + '/', {
-    method: 'DELETE'
+  fetch(baseUrl + specificationsPath + specificationId + "/", {
+    method: "DELETE",
+  });
+}
+
+function postSpecification(
+  serviceId,
+  cause,
+  initialLoss,
+  recoveryTime,
+  resilienceLoss
+) {
+  fetch(baseUrl + specificationsPath, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({
+      service: serviceId,
+      cause: cause,
+      max_initial_loss: initialLoss,
+      max_recovery_time: recoveryTime,
+      max_lor: resilienceLoss,
+    }),
   })
+    .then((res) => res.json())
+    .then(
+      (result) => {
+        specification = result;
+        handleSpecification();
+      },
+      (error) => {
+        console.log(
+          "Error while posting specification for service " +
+            serviceId +
+            " and cause " +
+            cause +
+            ": " +
+            error
+        );
+      }
+    );
 }

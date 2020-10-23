@@ -36,7 +36,7 @@
         <div class="viz-container data-viz-container" id="service-viz-container">
             <div class="row">
                 <div class="col-auto">
-                    <h1>Transient Behavior</h1>
+                    <h3>Transient Behavior</h3>
                 </div>
             </div>
             <div class="row justify-content-between">
@@ -58,7 +58,7 @@
                 <div class="col-auto">
                     <button type="button" onclick="editSpecification()" class="btn btn-primary btn-edit" id="editSpecBtn">Edit specification</button>
                     <button type="button" onclick="deleteSpecification()" class="btn btn-primary btn-delete" id ="deleteSpecBtn">Delete specification</button>
-                    <button type="button" onclick="addSpecification()" class="btn btn-primary btn-add" id="addSpecBtn">Add specification</button>
+                    <button type="button" data-toggle="modal" data-target="#add-specification-modal" class="btn btn-primary btn-add" id="addSpecBtn">Add specification</button>
                     <button type="button" onclick="toggleSpecification()" class="btn btn-primary"
                         id="specification-toggle">Show specification</button>
                 </div>
@@ -73,8 +73,51 @@
         <!-- Transient loos visualization -->
         <div class="viz-container data-viz-container" id="loss-viz-container">
             <div class="row">
+                <div class="col-auto">
+                    <h3>Loss of Resilience</h3>
+                </div>
                 <div class="col">
                     <div id="loss_viz"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add specification modal -->
+    <div class="modal fade" id="add-specification-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add specification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group row">
+                            <label for="initial-loss-input" class="col-sm-4 col-form-label">Initial loss:</label>
+                            <div class="col-sm-4">
+                                <input type="number" name="initial-loss" id="initial-loss-input" class="form-control" placeholder="e.g. 30" onchange="computeResilienceLoss()">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="recovery-time-input" class="col-sm-4 col-form-label">Recovery time:</label>
+                            <div class="col-sm-4">
+                                <input type="number" name="recovery-time" id="recovery-time-input" class="form-control" placeholder="e.g. 120" onchange="computeResilienceLoss()">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="resilience-loss" class="col-sm-4 col-form-label">Resilience loss:</label>
+                            <div class="col-sm-4">
+                                <input type="number" name="resilience-loss" id="resilience-loss-input" class="form-control" placeholder="e.g. 1800" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">                    
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addSpecification()">Add</button>
                 </div>
             </div>
         </div>
@@ -90,6 +133,7 @@
     <script src="javascript/networkService.js"></script>
     <script src="javascript/main.js"></script>
     <script src="javascript/socketService.js"></script>
+    <script src="javascript/modal.js"></script>
 
     <!-- Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

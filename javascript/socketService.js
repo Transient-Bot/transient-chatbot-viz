@@ -20,6 +20,12 @@ socket.onmessage = function (e) {
     case Intent.DELETE_SPECIFICATION:
       handleDeleteSpecification(params.service_name, params.tb_cause);
       break;
+    case Intent.EDIT_SPECIFICATION_LOSS:
+      handleEditSpecification(params.service_name, params.tb_cause)
+      break;
+    case Intent.EDIT_SPECIFICATION_RECOVERY_TIME:
+      handleEditSpecification(params.service_name, params.tb_cause)
+      break;
     default:
       break;
   }
@@ -77,5 +83,20 @@ function handleDeleteSpecification(service_name, cause) {
     deleteBtn.style.display = "none";
     editBtn.style.display = "none";
     addBtn.style.display = "inline";
+  }
+}
+
+function handleEditSpecification(service_name, cause) {
+  if (service_name === null || cause === null) {
+    return;
+  }
+
+  // Check if specification is visualized right now
+  if (
+    service_name === selectedService.name &&
+    cause === specification.cause
+  ) {
+    removeSpecificationPath();
+    fetchSpecification(selectedService.id, cause)
   }
 }
