@@ -5,6 +5,7 @@ const serviceDataPath = 'servicedata/';
 const specificationsPath = 'specifications/';
 
 const expected_qos = 100;
+const qos_threshold = 90;
 
 const Intent = {
     SELECT_SERVICE: 'Select Service',

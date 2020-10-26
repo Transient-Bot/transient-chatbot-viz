@@ -145,7 +145,6 @@ function createDataGraph() {
     return d.time;
   }).left;
 
-
   // Add clip path
   var clip = dataSvg
     .append("defs")
@@ -167,14 +166,14 @@ function createDataGraph() {
     .on("end", updateChart);
 
   var lineChart = dataSvg
-    .append('g')
-    .attr('clip-path', "url(#clip)")
-    .attr('id', 'line-chart');
+    .append("g")
+    .attr("clip-path", "url(#clip)")
+    .attr("id", "line-chart");
 
   // Add line
   lineChart
     .append("path")
-    .attr('id', 'data-line')
+    .attr("id", "data-line")
     .datum(serviceData)
     .attr("fill", "rgba(116,171,237,0.2)")
     .attr("stroke", "steelblue")
@@ -204,20 +203,23 @@ function createDataGraph() {
     extent = d3.event.selection;
 
     // Update domain
-    if(!extent){
-      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+    if (!extent) {
+      if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350)); // This allows to wait a little bit
       x.domain(
         d3.extent(serviceData, function (d) {
           return d.time;
         })
-      )
+      );
     } else {
       x.domain([x.invert(extent[0]), x.invert(extent[1])]);
       lineChart.select(".brush").call(brush.move, null);
     }
 
     // Update axis and line
-    xGrid.transition().duration(1000).call(d3.axisBottom(x).tickSize(-height).tickFormat(""));
+    xGrid
+      .transition()
+      .duration(1000)
+      .call(d3.axisBottom(x).tickSize(-height).tickFormat(""));
     xAxis.transition().duration(1000).call(d3.axisBottom(x));
 
     // Update data line
@@ -237,10 +239,10 @@ function createDataGraph() {
             return y(d.qos);
           })
       );
-    
+
     // Update specification line
     lineChart
-      .select('#specification-line')
+      .select("#specification-line")
       .transition()
       .duration(1000)
       .attr(
@@ -256,8 +258,8 @@ function createDataGraph() {
       );
   }
 
-  if (specificationIsHidden === false) {   
-    var cause = document.getElementById('causes').value;         
+  if (specificationIsHidden === false) {
+    var cause = document.getElementById("causes").value;
     fetchSpecification(selectedService.id, cause);
   }
 }
@@ -274,30 +276,38 @@ function drawSpecification(specification) {
   ];
 
   // Create dataset
+  var specificationEndpoint = -1.0;
+  var transientBehaviorEndpoint = -1.0;
   for (var i = 0; i < serviceData.length; i++) {
     var elem = serviceData[i];
-    if (elem.qos < expected_qos) {
-      if (isInitialLoss(i, max_initial_loss)) {
-        var initialLoss = getInitialLoss(i);
-        data.push({ qos: 100, time: initialLoss.time });
-        data.push({
-          qos: parseFloat(100 - max_initial_loss),
-          time: initialLoss.time,
-        });
-        break;
+    
+    if (elem.time > specificationEndpoint && elem.time > transientBehaviorEndpoint) {
+      if (elem.qos < expected_qos) {
+        if (isInitialLoss(i)) {
+          var initialLossIndex = getInitialLossIndex(i);
+          var initialLoss = serviceData[initialLossIndex];
+          transientBehaviorEndpoint = getTransientBehaviorEndpoint(serviceData, initialLossIndex);
+          console.log('Transient behavior from ' + initialLoss.time + ' to ' + transientBehaviorEndpoint);
+
+          data.push({ qos: 100, time: initialLoss.time });
+          data.push({
+            qos: parseFloat(100 - max_initial_loss),
+            time: initialLoss.time,
+          });
+
+          var startpoint = parseFloat(data[data.length - 1].time);
+          specificationEndpoint = startpoint + parseFloat(max_recovery_time);
+          data.push({ qos: 100, time: specificationEndpoint });
+        }
       }
     }
   }
 
-  var startpoint = parseFloat(data[data.length - 1].time);
-  var endpoint = startpoint + parseFloat(max_recovery_time);
-
-  data.push({ qos: 100, time: endpoint });
   data.push({ qos: 100, time: serviceData[serviceData.length - 1].time });
 
   d3.select("#line-chart")
     .append("path")
-    .attr('id', 'specification-line')
+    .attr("id", "specification-line")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", "red")
@@ -314,38 +324,71 @@ function drawSpecification(specification) {
         })
     );
 
-  function isInitialLoss(index, max_initial_loss) {
-    const lastIndex =
-      serviceData.length >= index + 5 ? index + 5 : serviceData.length - 1;
-    var nextValues = serviceData.slice(index, lastIndex);
-    var qosValues = nextValues.map((service) => service.qos);
-    var avg = qosValues.reduce((a, b) => a + b) / qosValues.length;
-    var loss = expected_qos - avg;
-
-    if (loss > max_initial_loss) {
+  function isInitialLoss(index) {
+    var med = getMedianOfNextValues(serviceData, index);
+    if (med < qos_threshold) {
       return true;
     }
     return false;
   }
 
-  function getInitialLoss(index) {
-    const lastIndex =
-      serviceData.length >= index + 5 ? index + 5 : serviceData.length - 1;
-    var nextValues = serviceData.slice(index, lastIndex);
-
+  function getInitialLossIndex(index) {
+    var nextValues = getNextValues(serviceData, index);
     var minimum = serviceData[index];
+    var indexMinimum = index;
+
     for (var j = 0; j < nextValues.length; j++) {
       if (nextValues[j].qos < minimum.qos) {
         minimum = nextValues[j];
+        indexMinimum = index + j;
       }
     }
 
-    return minimum;
+    return indexMinimum;
+  }
+
+  function getTransientBehaviorEndpoint(data, startIndex) {
+    for (var i = startIndex + 1; i < data.length; i++) {
+      var measurement = data[i];
+      if (measurement.qos >= expected_qos) {
+        var med = getMedianOfNextValues(data, i);
+        if (med >= qos_threshold) {
+          return data[i].time;
+        }
+      }
+    }
+    return data[data.length - 1].time;
+  }
+
+  function getMedianOfNextValues(data, startIndex) {
+    var nextValues = getNextValues(data, startIndex);
+    var qosValues = nextValues.map((service) => service.qos);
+    return median(qosValues);
+  }
+
+  function getNextValues(data, startIndex) {
+    const lastIndex = data.length >= startIndex + 5 ? startIndex + 5 : data.length - 1;
+    return data.slice(startIndex, lastIndex);
+  }
+  
+  function median(values) {
+    if (values.length === 0) return 0;
+
+    values.sort((a, b) => {
+      return a - b;
+    });
+
+    var center = Math.floor(values.length / 2);
+
+    if (values.length % 2) {
+      return values[center];
+    }
+    return values[half - 1] + values[half] / 2.0;
   }
 }
 
 function removeSpecificationPath() {
-  d3.selectAll('#specification-line').remove();
+  d3.selectAll("#specification-line").remove();
   specification = null;
 }
 
