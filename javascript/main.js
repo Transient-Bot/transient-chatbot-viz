@@ -25,6 +25,7 @@ document.getElementById('causes').addEventListener('change', (e) => {
   const cause = e.target.value;
   removeSpecificationPath();
   fetchSpecification(selectedService.id, cause);
+  drawTransientLossGraph();
 });
 
 // Adds options to endpoint select
