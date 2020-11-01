@@ -1,8 +1,8 @@
 var services;
 var dependencies;
 var serviceData;
-var specification;
 var selectedService;
+var specification;
 var specificationIsHidden = true;
 
 // Open websocket
@@ -11,21 +11,52 @@ const socket = new WebSocket(
 );
 
 // Fetch the components of the architecture diagram
-fetchServices();
-fetchDependencies();
+fetchServices()
+  .then(res => {
+    if (res != null) {
+      services = res;
+      if (dependencies != null) {
+        createArchitectureGraph();
+      }
+    }
+  }); 
+
+fetchDependencies()
+  .then(res => {
+    if (res != null) {
+      dependencies = res;
+      if (services != null) {
+        createArchitectureGraph();
+      }
+    }
+  })
 
 // Change service data visualization when an endpoint is selected
 document.getElementById('endpoints').addEventListener('change', (e) => {
   const callId = e.target.value;
-  fetchServiceData(selectedService.id, callId);
+  fetchServiceData(selectedService.id, callId)
+    .then(res => {
+      if (res != null) {
+        serviceData = res;
+        createDataGraph(res);
+      }
+    });
 });
 
 // Change specification visualization when a cause for transient behavior is selected
 document.getElementById('causes').addEventListener('change', (e) => {
   const cause = e.target.value;
   removeSpecificationPath();
-  fetchSpecification(selectedService.id, cause);
-  drawTransientLossGraph();
+
+  fetchSpecification(selectedService.id, cause)
+    .then(res => {
+      if (res != null) {
+        handleSpecification(res);
+      } else {
+        const lossContainer = document.getElementById('loss-viz-container');
+        lossContainer.style.display = 'none';
+      }
+    });
 });
 
 // Adds options to endpoint select
@@ -63,6 +94,7 @@ function populateEndpointsSelect(service) {
 function showSpecification(tb_cause) {
   var btn = document.getElementById('specification-toggle');
   var causesContainer = document.getElementById('causes-select-container');
+  var lossContainer = document.getElementById('loss-viz-container');
   var cause = document.getElementById('causes').value;
 
   if (tb_cause !== null) {
@@ -70,12 +102,18 @@ function showSpecification(tb_cause) {
     document.getElementById('causes').value = tb_cause;
   }
 
+  lossContainer.style.display = 'block';
   causesContainer.style.display = 'flex';
   btn.innerHTML = 'Hide specification';
   specificationIsHidden = false;
 
   removeSpecificationPath();
-  fetchSpecification(selectedService.id, cause);
+  fetchSpecification(selectedService.id, cause)
+    .then(res => {
+      if (res != null) {
+        handleSpecification(res);
+      }
+    });
 }
 
 function hideSpecification() {
@@ -84,7 +122,9 @@ function hideSpecification() {
   var deleteBtn = document.getElementById('deleteSpecBtn');
   var editBtn = document.getElementById('editSpecBtn');
   var causesContainer = document.getElementById('causes-select-container');
+  var lossContainer = document.getElementById('loss-viz-container');
 
+  lossContainer.style.display = 'none';
   causesContainer.style.display = 'none';
   addBtn.style.display = 'none';
   deleteBtn.style.display = 'none';
@@ -92,6 +132,7 @@ function hideSpecification() {
   btn.innerHTML = 'Show specification';
   specificationIsHidden = true;
   removeSpecificationPath();
+  
 }
 
 // Toggle the transient behavior specification visualization
@@ -108,29 +149,25 @@ function toggleSpecification() {
 // Show data viz containers
 function toggleDataVizContainer() {
   var serviceContainer = document.getElementById('service-viz-container');
-  var lossContainer = document.getElementById('loss-viz-container');
-
   serviceContainer.style.display = 'block';
-  lossContainer.style.display = 'block';
 }
 
-function handleSpecification() {
+function handleSpecification(spec) {
   var deleteBtn = document.getElementById('deleteSpecBtn');
   var editBtn = document.getElementById('editSpecBtn');
   var addBtn = document.getElementById('addSpecBtn');
+  var lossContainer = document.getElementById('loss-viz-container');
 
-  if (
-    serviceData != null &&
-    specification != null &&
-    specification != undefined
-  ) {
+  if (spec != null && spec != undefined) {
+    specification = spec;
     deleteBtn.style.display = 'inline';
     editBtn.style.display = 'inline';
     addBtn.style.display = 'none';
+    lossContainer.style.display = 'block';
 
-    drawSpecification(specification);
     drawTransientLossGraph();
-  } else if (specification === null || specification == undefined) {
+    drawSpecification(spec);
+  } else {
     addBtn.style.display = 'inline';
     deleteBtn.style.display = 'none';
     editBtn.style.display = 'none';
@@ -144,6 +181,7 @@ function deleteSpecification() {
   var deleteBtn = document.getElementById('deleteSpecBtn');
   var editBtn = document.getElementById('editSpecBtn');
   var addBtn = document.getElementById('addSpecBtn');
+  var lossContainer = document.getElementById('loss-viz-container');
 
   const deletionConfirmed = confirm(
     'Are you sure that you want to delete the transient behavior specification for ' +
@@ -159,5 +197,6 @@ function deleteSpecification() {
     deleteBtn.style.display = 'none';
     editBtn.style.display = 'none';
     addBtn.style.display = 'inline';
+    lossContainer.style.display = 'none';
   }
 }

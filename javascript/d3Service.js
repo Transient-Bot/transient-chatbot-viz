@@ -2,11 +2,14 @@
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
   width = 2500 - margin.left - margin.right,
   height = 500 - margin.top - margin.bottom,
+  lossHeight = 200 - margin.top - margin.bottom,
   rectWidth = 120,
   rectHeight = 42;
 
 var x;
 var y;
+var lossX;
+var lossY;
 
 function createArchitectureGraph() {
   // Append svg object
@@ -97,7 +100,7 @@ function createArchitectureGraph() {
   }
 }
 
-function createDataGraph() {
+function createDataGraph(serviceData) {
   // Remove old graphs
   d3.selectAll('#data-svg').remove();
 
@@ -260,13 +263,19 @@ function createDataGraph() {
 
   if (specificationIsHidden === false) {
     var cause = document.getElementById('causes').value;
-    fetchSpecification(selectedService.id, cause);
+    fetchSpecification(selectedService.id, cause)
+      .then(res => {
+        if (res != null) {
+          handleSpecification(res);
+        }
+      })
   }
 }
 
 function drawSpecification(specification) {
   const max_initial_loss = specification.max_initial_loss;
   const max_recovery_time = specification.max_recovery_time;
+  const max_loss = specification.max_lor;
 
   data = [
     {
@@ -287,7 +296,6 @@ function drawSpecification(specification) {
           var initialLossIndex = getInitialLossIndex(i);
           var initialLoss = serviceData[initialLossIndex];
           transientBehaviorEndpoint = getTransientBehaviorEndpoint(serviceData, initialLossIndex);
-          console.log('Transient behavior from ' + initialLoss.time + ' to ' + transientBehaviorEndpoint);
 
           data.push({ qos: 100, time: initialLoss.time });
           data.push({
@@ -323,6 +331,16 @@ function drawSpecification(specification) {
           return y(d.qos);
         })
     );
+  
+    d3.select('#line-chart-loss')
+    .append('line')
+    .attr('id', 'specification-line-loss')
+    .attr('stroke', 'red')
+    .attr('stroke-width', 2.0)
+    .attr('x1', 0.0)
+    .attr('y1', function (d) { return lossY(max_loss); })
+    .attr('x2', width)
+    .attr('y2', function (d) { return lossY(max_loss); });
 
   function isInitialLoss(index) {
     var med = getMedianOfNextValues(serviceData, index);
@@ -389,6 +407,7 @@ function drawSpecification(specification) {
 
 function removeSpecificationPath() {
   d3.selectAll('#specification-line').remove();
+  d3.selectAll('#specification-line-loss').remove();
   specification = null;
 }
 
@@ -397,19 +416,26 @@ function drawTransientLossGraph() {
   // Remove old graphs
   d3.selectAll('#loss-svg').remove();
 
+  // Fix data
+  serviceData.forEach(function(d) {
+    d.failureLoss = parseFloat(d.failureLoss);
+    d.deploymentLoss = parseFloat(d.deploymentLoss);
+    d.loadBalancingLoss = parseFloat(d.loadBalancingLoss);
+  });
+
   // Append svg object
   var lossSvg = d3
     .select('#loss_viz')
     .append('svg')
     .attr('id', 'loss-svg')
     .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
+    .attr('height', lossHeight + margin.top + margin.bottom)
     .append('g')
     .attr('id', 'loss-svg-g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
   // Add x axis
-  var xScale = d3
+  lossX = d3
     .scaleLinear()
     .domain(
       d3.extent(serviceData, function (d) {
@@ -421,21 +447,21 @@ function drawTransientLossGraph() {
   var xGrid = lossSvg
       .append('g')
       .attr('class', 'grid')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(xScale).tickSize(-height).tickFormat(''));
+      .attr('transform', 'translate(0,' + lossHeight + ')')
+      .call(d3.axisBottom(lossX).tickSize(-lossHeight).tickFormat(''));
   var xAxis = lossSvg
       .append('g')
-      .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(xScale));
+      .attr('transform', 'translate(0,' + lossHeight + ')')
+      .call(d3.axisBottom(lossX));
     
-  var yScale = d3.scaleLinear().domain(
+  lossY = d3.scaleLinear().domain(
     d3.extent(serviceData, getLossData)
-  ).range([height, 0]).nice();
+  ).range([lossHeight, 0]).nice();
   lossSvg
       .append('g')
       .attr('class', 'grid')
-      .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(''));
-  lossSvg.append('g').call(d3.axisLeft(yScale));
+      .call(d3.axisLeft(lossY).tickSize(-width).tickFormat(''));
+  lossSvg.append('g').call(d3.axisLeft(lossY));
 
   // Add clip path
   var clip = lossSvg  
@@ -444,7 +470,7 @@ function drawTransientLossGraph() {
       .attr('id', 'clip_loss')
       .append('svg:rect')
       .attr('width', width)
-      .attr('height', height)
+      .attr('height', lossHeight)
       .attr('x', 0)
       .attr('y', 0);
   
@@ -453,7 +479,7 @@ function drawTransientLossGraph() {
       .brushX()
       .extent([
         [0, 0],
-        [width, height],
+        [width, lossHeight],
       ])
       .on('end', updateChart);
   
@@ -474,11 +500,11 @@ function drawTransientLossGraph() {
     d3
       .area()
       .x(function (d) {
-        return xScale(d.time);
+        return lossX(d.time);
       })
-      .y0(yScale(0))
+      .y0(lossY(0))
       .y1(function (d) {
-        return yScale(getLossData(d));
+        return lossY(getLossData(d));
       })
   );
 
@@ -496,13 +522,13 @@ function drawTransientLossGraph() {
     // Update domain
     if (!extent) {
       if (!idleTimeout) return (idleTimeout = setTimeout(idled, 350));
-      xScale.domain(
+      lossX.domain(
         d3.extent(serviceData, function (d) {
           return d.time;
         })
       );
     } else {
-      xScale.domain([xScale.invert(extent[0]), x.invert(extent[1])]);
+      lossX.domain([lossX.invert(extent[0]), x.invert(extent[1])]);
       lineChart.select('.brush').call(brush.move, null);
     }
 
@@ -510,8 +536,8 @@ function drawTransientLossGraph() {
     xGrid
       .transition()
       .duration(1000)
-      .call(d3.axisBottom(xScale).tickSize(-height).tickFormat(''));
-    xAxis.transition().duration(1000).call(d3.axisBottom(xScale));
+      .call(d3.axisBottom(lossX).tickSize(-lossHeight).tickFormat(''));
+    xAxis.transition().duration(1000).call(d3.axisBottom(lossX));
 
     // Update data line
     lineChart
@@ -523,11 +549,11 @@ function drawTransientLossGraph() {
       d3
       .area()
       .x(function (d) {
-        return xScale(d.time);
+        return lossX(d.time);
       })
-      .y0(yScale(0))
+      .y0(lossY(0))
       .y1(function (d) {
-        return yScale(getLossData(d));
+        return lossY(getLossData(d));
       })
     );
   }

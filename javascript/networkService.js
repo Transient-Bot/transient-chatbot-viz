@@ -1,79 +1,59 @@
-function fetchServices() {
-  fetch(baseUrl + servicesPath)
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        services = result;
-        if (services != null && dependencies != null) {
-          createArchitectureGraph();
-        }
-      },
-      (error) => {
-        console.log("Error while fetching services: " + error);
-      }
+async function fetchServices() {
+  try {
+    let response = await fetch(baseUrl + servicesPath);
+    let data = await response.json();
+    return data;
+  } catch(err) {
+    console.error(
+      "Error while fetching services: " + error
     );
+  }
 }
 
-function fetchDependencies() {
-  fetch(baseUrl + dependenciesPath)
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        dependencies = result;
-        if (services != null && dependencies != null) {
-          createArchitectureGraph();
-        }
-      },
-      (error) => {
-        console.log("Error while fetching dependencies: " + error);
-      }
+async function fetchDependencies() {
+  try {
+    let response = await fetch(baseUrl + dependenciesPath);
+    let data = await response.json();
+    return data;
+  } catch(err) {
+    console.error(
+      "Error while fetching dependencies: " + error
     );
+  }
 }
 
-function fetchServiceData(serviceId, callId) {
-  fetch(
-    baseUrl + serviceDataPath + "?service=" + serviceId + "&callid=" + callId
-  )
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        serviceData = result;
-        if (serviceData != null) {
-          createDataGraph();
-        }
-      },
-      (error) => {
-        console.log(
-          "Error while fetching service data for service " +
-            serviceId +
-            ": " +
-            error
-        );
-      }
+async function fetchServiceData(serviceId, callId) {
+  try {
+    let response = await fetch(
+      baseUrl + serviceDataPath + "?service=" + serviceId + "&callid=" + callId
     );
+    let data = await response.json();
+    return data;
+  } catch (err) {
+    console.error(
+      "Error while fetching service data for service " +
+        serviceId +
+        ": " +
+        error
+    );
+  }
 }
 
-function fetchSpecification(serviceId, cause) {
-  fetch(
-    baseUrl + specificationsPath + "?service=" + serviceId + "&cause=" + cause
-  )
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        specification = result[0];
-        handleSpecification();
-      },
-      (error) => {
-        console.log(
-          "Error while fetching specification for service " +
+async function fetchSpecification(serviceId, cause) {
+  try {
+    let response = await fetch(baseUrl + specificationsPath + "?service=" + serviceId + "&cause=" + cause);
+    let data = await response.json();
+    return data[0];
+  } catch(err) {
+    console.error(
+      "Error while fetching specification for service " +
             serviceId +
             " and cause " +
             cause +
             ": " +
             error
-        );
-      }
     );
+  }
 }
 
 function deleteSpecificationRequest(specificationId) {
@@ -82,42 +62,39 @@ function deleteSpecificationRequest(specificationId) {
   });
 }
 
-function postSpecification(
-  serviceId,
+async function postSpecification(serviceId,
   cause,
   initialLoss,
   recoveryTime,
   resilienceLoss
 ) {
-  fetch(baseUrl + specificationsPath, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({
-      service: serviceId,
-      cause: cause,
-      max_initial_loss: initialLoss,
-      max_recovery_time: recoveryTime,
-      max_lor: resilienceLoss,
-    }),
-  })
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        specification = result;
-        handleSpecification();
-      },
-      (error) => {
-        console.log(
-          "Error while posting specification for service " +
-            serviceId +
-            " and cause " +
-            cause +
-            ": " +
-            error
-        );
-      }
-    );
+  let headers = {
+    "Accept": "application/json",
+    "Content-type": "application/json",
+  };
+
+  let body = JSON.stringify({
+    service: serviceId,
+    cause: cause,
+    max_initial_loss: initialLoss,
+    max_recovery_time: recoveryTime,
+    max_lor: resilienceLoss,
+  });
+
+  try {
+    let response = await fetch(baseUrl + specificationsPath, {
+      method: "POST",
+      headers: headers,
+      body: body
+    });
+    let data = await response.json();
+    return data;
+  } catch(err) {
+    "Error while posting specification for service " +
+    serviceId +
+    " and cause " +
+    cause +
+    ": " +
+    error
+  }
 }
