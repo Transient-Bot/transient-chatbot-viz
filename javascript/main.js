@@ -129,6 +129,7 @@ function handleSpecification() {
     addBtn.style.display = 'none';
 
     drawSpecification(specification);
+    drawTransientLossGraph();
   } else if (specification === null || specification == undefined) {
     addBtn.style.display = 'inline';
     deleteBtn.style.display = 'none';

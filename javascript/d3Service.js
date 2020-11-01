@@ -428,7 +428,9 @@ function drawTransientLossGraph() {
       .attr('transform', 'translate(0,' + height + ')')
       .call(d3.axisBottom(xScale));
     
-  var yScale = d3.scaleLinear().domain([0, 20000]).range([height, 0]).nice();
+  var yScale = d3.scaleLinear().domain(
+    d3.extent(serviceData, getLossData)
+  ).range([height, 0]).nice();
   lossSvg
       .append('g')
       .attr('class', 'grid')
@@ -476,8 +478,7 @@ function drawTransientLossGraph() {
       })
       .y0(yScale(0))
       .y1(function (d) {
-        // TODO: change this based on which specification is selected
-        return yScale(d.failureLoss);
+        return yScale(getLossData(d));
       })
   );
 
@@ -522,12 +523,28 @@ function drawTransientLossGraph() {
       d3
       .area()
       .x(function (d) {
-        return xScale(d.tinme);
+        return xScale(d.time);
       })
       .y0(yScale(0))
       .y1(function (d) {
-        return yScale(d.failureLoss) // TODO: change this for arbitrary loss
+        return yScale(getLossData(d));
       })
     );
+  }
+
+  function getLossData(d) {
+    const causesSelect = document.getElementById('causes');
+    const cause = causesSelect.value;
+
+    switch (cause) {
+      case 'failure':
+        return d.failureLoss;
+      case 'deployment':
+        return d.deploymentLoss;
+      case 'load-balancing':
+        return d.loadBalancingLoss;
+      default:
+        return d.failureLoss;
+    }
   }
 }
