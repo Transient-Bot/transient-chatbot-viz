@@ -454,7 +454,10 @@ function drawTransientLossGraph() {
       .append('g')
       .attr('transform', 'translate(0,' + lossHeight + ')')
       .call(d3.axisBottom(lossX));
-  lossY = d3.scaleLinear().domain(d3.extent(serviceData, getLossData)).range([lossHeight, 0]).nice();
+  lossY = d3.scaleLinear().domain([
+    0,
+    d3.max([specification.max_lor + 50, d3.max(serviceData, getLossData)])
+  ]).range([lossHeight, 0]).nice();
   lossSvg
       .append('g')
       .attr('class', 'grid')
