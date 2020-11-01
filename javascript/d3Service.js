@@ -1,8 +1,11 @@
+const archContainer = document.getElementById('arch_viz');
+const containerWidth = archContainer.clientWidth;
+
 // Set dimensions and margin
 var margin = { top: 10, right: 30, bottom: 30, left: 40 },
-  width = 2500 - margin.left - margin.right,
+  width = containerWidth - margin.left - margin.right,
   height = 500 - margin.top - margin.bottom,
-  lossHeight = 200 - margin.top - margin.bottom,
+  lossHeight = 300 - margin.top - margin.bottom,
   rectWidth = 120,
   rectHeight = 42;
 
@@ -265,9 +268,7 @@ function createDataGraph(serviceData) {
     var cause = document.getElementById('causes').value;
     fetchSpecification(selectedService.id, cause)
       .then(res => {
-        if (res != null) {
-          handleSpecification(res);
-        }
+        handleSpecification(res);
       })
   }
 }
@@ -331,7 +332,7 @@ function drawSpecification(specification) {
           return y(d.qos);
         })
     );
-  
+    
     d3.select('#line-chart-loss')
     .append('line')
     .attr('id', 'specification-line-loss')
@@ -453,15 +454,15 @@ function drawTransientLossGraph() {
       .append('g')
       .attr('transform', 'translate(0,' + lossHeight + ')')
       .call(d3.axisBottom(lossX));
-    
-  lossY = d3.scaleLinear().domain(
-    d3.extent(serviceData, getLossData)
-  ).range([lossHeight, 0]).nice();
+  lossY = d3.scaleLinear().domain(d3.extent(serviceData, getLossData)).range([lossHeight, 0]).nice();
   lossSvg
       .append('g')
       .attr('class', 'grid')
       .call(d3.axisLeft(lossY).tickSize(-width).tickFormat(''));
-  lossSvg.append('g').call(d3.axisLeft(lossY));
+  lossSvg
+    .append('g')
+    .attr('id', 'loss-axis-left')
+    .call(d3.axisLeft(lossY));
 
   // Add clip path
   var clip = lossSvg  
@@ -557,20 +558,20 @@ function drawTransientLossGraph() {
       })
     );
   }
+}
 
-  function getLossData(d) {
-    const causesSelect = document.getElementById('causes');
-    const cause = causesSelect.value;
+function getLossData(d) {
+  const causesSelect = document.getElementById('causes');
+  const cause = causesSelect.value;
 
-    switch (cause) {
-      case 'failure':
-        return d.failureLoss;
-      case 'deployment':
-        return d.deploymentLoss;
-      case 'load-balancing':
-        return d.loadBalancingLoss;
-      default:
-        return d.failureLoss;
-    }
+  switch (cause) {
+    case 'failure':
+      return d.failureLoss;
+    case 'deployment':
+      return d.deploymentLoss;
+    case 'load-balancing':
+      return d.loadBalancingLoss;
+    default:
+      return d.failureLoss;
   }
 }

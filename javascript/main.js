@@ -54,7 +54,14 @@ document.getElementById('causes').addEventListener('change', (e) => {
         handleSpecification(res);
       } else {
         const lossContainer = document.getElementById('loss-viz-container');
+        const addBtn = document.getElementById('addSpecBtn');
+        const deleteBtn = document.getElementById('deleteSpecBtn');
+        const editBtn = document.getElementById('editSpecBtn');
+
         lossContainer.style.display = 'none';
+        deleteBtn.style.display = 'none';
+        editBtn.style.display = 'none';
+        addBtn.style.display = 'inline';
       }
     });
 });
@@ -171,6 +178,7 @@ function handleSpecification(spec) {
     addBtn.style.display = 'inline';
     deleteBtn.style.display = 'none';
     editBtn.style.display = 'none';
+    lossContainer.style.display = 'none';
   }
 }
 
