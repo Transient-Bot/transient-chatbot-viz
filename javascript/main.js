@@ -109,7 +109,6 @@ function showSpecification(tb_cause) {
     document.getElementById('causes').value = tb_cause;
   }
 
-  lossContainer.style.display = 'block';
   causesContainer.style.display = 'flex';
   btn.innerHTML = 'Hide specification';
   specificationIsHidden = false;
@@ -117,9 +116,7 @@ function showSpecification(tb_cause) {
   removeSpecificationPath();
   fetchSpecification(selectedService.id, cause)
     .then(res => {
-      if (res != null) {
-        handleSpecification(res);
-      }
+      handleSpecification(res);
     });
 }
 
