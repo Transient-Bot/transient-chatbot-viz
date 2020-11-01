@@ -15,6 +15,10 @@ var lossX;
 var lossY;
 
 function createArchitectureGraph() {
+  var violationScale = d3.scaleOrdinal()
+    .domain([true, false])
+    .range(['orange','#74abed'])
+
   // Append svg object
   var archSvg = d3
     .select('#arch_viz')
@@ -47,7 +51,9 @@ function createArchitectureGraph() {
     .attr('id', 'service-rect')
     .attr('width', rectWidth)
     .attr('height', rectHeight)
-    .attr('fill', '#74abed')
+    .attr('fill', function(d) {
+      return violationScale(d.violation_detected);
+    })
     .attr('x', -(rectWidth / 2))
     .attr('y', -(rectHeight / 2));
 

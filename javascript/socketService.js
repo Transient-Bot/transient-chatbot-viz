@@ -2,7 +2,7 @@ socket.onmessage = function (e) {
   const data = JSON.parse(e.data);
   const intent = data.intent;
   const params = data.params;
-  console.log("Received intent: " + intent + " with param: " + params);
+  console.log('Received intent: ' + intent + ' with param: ' + params);
 
   if (intent === null || params === null) {
     return;
@@ -31,7 +31,7 @@ socket.onmessage = function (e) {
   }
 
   if (
-    intent === "Select Service" &&
+    intent === 'Select Service' &&
     params !== null &&
     params.service_name !== null
   ) {
@@ -40,19 +40,20 @@ socket.onmessage = function (e) {
 };
 
 socket.onclose = function (e) {
-  console.error("Chat socket closed");
+  console.error('Chat socket closed');
 };
 
 function highlightService(serviceName) {
   // deselect possible selected services
-  d3.selectAll("#service-rect").style("fill", "#74abed");
+  d3.selectAll('#service-rect').style('stroke', 'none');
 
   // select service
-  d3.selectAll("#service-rect")
+  d3.selectAll('#service-rect')
     .filter(function (d) {
       return d.name === serviceName;
     })
-    .style("fill", "red");
+    .style('stroke', 'red')
+    .attr('stroke-width', '4.0');
 
   // load data and create chart for service
   var filteredServices = services.filter((service) => {
@@ -75,14 +76,14 @@ function handleDeleteSpecification(service_name, cause) {
     service_name === selectedService.name &&
     cause === specification.cause
   ) {
-    var deleteBtn = document.getElementById("deleteSpecBtn");
-    var editBtn = document.getElementById("editSpecBtn");
-    var addBtn = document.getElementById("addSpecBtn");
+    var deleteBtn = document.getElementById('deleteSpecBtn');
+    var editBtn = document.getElementById('editSpecBtn');
+    var addBtn = document.getElementById('addSpecBtn');
 
     removeSpecificationPath();
-    deleteBtn.style.display = "none";
-    editBtn.style.display = "none";
-    addBtn.style.display = "inline";
+    deleteBtn.style.display = 'none';
+    editBtn.style.display = 'none';
+    addBtn.style.display = 'inline';
   }
 }
 
