@@ -68,3 +68,7 @@ text {
 .act-ind {
     display: none;
 }
+
+#systems-label {
+    color: white;
+}

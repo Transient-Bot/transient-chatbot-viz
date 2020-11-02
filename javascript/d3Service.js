@@ -15,6 +15,8 @@ var lossX;
 var lossY;
 
 function createArchitectureGraph() {
+  d3.selectAll('#arch-svg').remove();
+
   var violationScale = d3.scaleOrdinal()
     .domain([true, false])
     .range(['orange','#74abed'])
@@ -25,6 +27,7 @@ function createArchitectureGraph() {
     .append('svg')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
+    .attr('id', 'arch-svg')
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -78,7 +81,7 @@ function createArchitectureGraph() {
         .links(dependencies) // and this the list of links
         .distance(100)
     )
-    .force('charge', d3.forceManyBody().strength(-400).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+    .force('charge', d3.forceManyBody().strength(-300).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
     .force('center', d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
     .force('collision', d3.forceCollide(rectWidth))
     .on('end', ticked);

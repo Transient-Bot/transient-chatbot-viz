@@ -1,23 +1,25 @@
 async function fetchServices() {
+  const system = document.getElementById('systems').value;
   try {
-    let response = await fetch(baseUrl + servicesPath);
+    let response = await fetch(baseUrl + servicesPath + '?system=' + system);
     let data = await response.json();
     return data;
   } catch(err) {
     console.error(
-      "Error while fetching services: " + error
+      'Error while fetching services: ' + err
     );
   }
 }
 
 async function fetchDependencies() {
+  const system = document.getElementById('systems').value;
   try {
-    let response = await fetch(baseUrl + dependenciesPath);
+    let response = await fetch(baseUrl + dependenciesPath + '?system=' + system);
     let data = await response.json();
     return data;
   } catch(err) {
     console.error(
-      "Error while fetching dependencies: " + error
+      'Error while fetching dependencies: ' + err
     );
   }
 }
@@ -25,40 +27,40 @@ async function fetchDependencies() {
 async function fetchServiceData(serviceId, callId) {
   try {
     let response = await fetch(
-      baseUrl + serviceDataPath + "?service=" + serviceId + "&callid=" + callId
+      baseUrl + serviceDataPath + '?service=' + serviceId + '&callid=' + callId
     );
     let data = await response.json();
     return data;
   } catch (err) {
     console.error(
-      "Error while fetching service data for service " +
+      'Error while fetching service data for service ' +
         serviceId +
-        ": " +
-        error
+        ': ' +
+        err
     );
   }
 }
 
 async function fetchSpecification(serviceId, cause) {
   try {
-    let response = await fetch(baseUrl + specificationsPath + "?service=" + serviceId + "&cause=" + cause);
+    let response = await fetch(baseUrl + specificationsPath + '?service=' + serviceId + '&cause=' + cause);
     let data = await response.json();
     return data[0];
   } catch(err) {
     console.error(
-      "Error while fetching specification for service " +
+      'Error while fetching specification for service ' +
             serviceId +
-            " and cause " +
+            ' and cause ' +
             cause +
-            ": " +
-            error
+            ': ' +
+            err
     );
   }
 }
 
 function deleteSpecificationRequest(specificationId) {
-  fetch(baseUrl + specificationsPath + specificationId + "/", {
-    method: "DELETE",
+  fetch(baseUrl + specificationsPath + specificationId + '/', {
+    method: 'DELETE',
   });
 }
 
@@ -69,8 +71,8 @@ async function postSpecification(serviceId,
   resilienceLoss
 ) {
   let headers = {
-    "Accept": "application/json",
-    "Content-type": "application/json",
+    'Accept': 'application/json',
+    'Content-type': 'application/json',
   };
 
   let body = JSON.stringify({
@@ -83,18 +85,18 @@ async function postSpecification(serviceId,
 
   try {
     let response = await fetch(baseUrl + specificationsPath, {
-      method: "POST",
+      method: 'POST',
       headers: headers,
       body: body
     });
     let data = await response.json();
     return data;
   } catch(err) {
-    "Error while posting specification for service " +
+    'Error while posting specification for service ' +
     serviceId +
-    " and cause " +
+    ' and cause ' +
     cause +
-    ": " +
-    error
+    ': ' +
+    err
   }
 }

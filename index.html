@@ -18,8 +18,15 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark justify-content-between">
         <span class="navbar-brand mb-0 h1">Transient Behavior Dashboard</span>
+        <form class="form-inline">
+            <label for="systems" id="systems-label" class="col-form-label">System:</label>
+            <select name="systems" id="systems" class="form-control">
+                <option value="accounting-system">Accounting System</option>
+                <option value="SockShop">SockShop</option>
+            </select>
+        </form>
     </nav>
 
     <div class="container-fluid">
