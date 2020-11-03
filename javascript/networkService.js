@@ -1,7 +1,9 @@
 async function fetchServices() {
   const system = document.getElementById('systems').value;
+  const scenario = document.getElementById('scenarios').value;
+
   try {
-    let response = await fetch(baseUrl + servicesPath + '?system=' + system);
+    let response = await fetch(baseUrl + servicesPath + '?system=' + system + '&scenario=' + scenario);
     let data = await response.json();
     return data;
   } catch(err) {
@@ -13,8 +15,10 @@ async function fetchServices() {
 
 async function fetchDependencies() {
   const system = document.getElementById('systems').value;
+  const scenario = document.getElementById('scenarios').value;
+
   try {
-    let response = await fetch(baseUrl + dependenciesPath + '?system=' + system);
+    let response = await fetch(baseUrl + dependenciesPath + '?system=' + system + '&scenario=' + scenario);
     let data = await response.json();
     return data;
   } catch(err) {

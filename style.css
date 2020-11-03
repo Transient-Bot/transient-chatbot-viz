@@ -69,6 +69,7 @@ text {
     display: none;
 }
 
-#systems-label {
+.nav-form-label {
     color: white;
+    margin-left: 32px;
 }

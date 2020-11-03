@@ -68,21 +68,20 @@ function createArchitectureGraph() {
       return d.name;
     });
 
-  // Let's list the force we wanna apply on the network
   var simulation = d3
-    .forceSimulation(services) // Force algorithm is applied to data.nodes
+    .forceSimulation(services)
     .force(
       'link',
       d3
-        .forceLink() // This force provides links between nodes
+        .forceLink()
         .id(function (d) {
           return d.id;
-        }) // This provide  the id of a node
-        .links(dependencies) // and this the list of links
-        .distance(100)
+        })
+        .links(dependencies)
+        .distance(200)
     )
-    .force('charge', d3.forceManyBody().strength(-300).distanceMax([150])) // This adds repulsion between nodes. Play with the -400 for the repulsion strength
-    .force('center', d3.forceCenter(width / 2, height / 2)) // This force attracts nodes to the center of the svg area
+    .force('charge', d3.forceManyBody().strength(-300).distanceMax([150]))
+    .force('center', d3.forceCenter(width / 2, height / 2))
     .force('collision', d3.forceCollide(rectWidth))
     .on('end', ticked);
 
