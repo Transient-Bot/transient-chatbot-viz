@@ -1,5 +1,25 @@
 socket.onmessage = function (e) {
   const data = JSON.parse(e.data);
+  const messageType = data.type;
+
+  switch (messageType) {
+    case 'interaction':
+      handleVisInteraction(data);
+      break;
+    case 'service.update':
+      handleServiceUpdate(data);
+      break;
+    default:
+      console.log('Received message but cannot handle it: ' + data.type);
+      break;
+  }
+};
+
+socket.onclose = function (e) {
+  console.error('Chat socket closed');
+};
+
+function handleVisInteraction(data) {
   const intent = data.intent;
   const params = data.params;
   console.log('Received intent: ' + intent + ' with param: ' + params);
@@ -21,10 +41,10 @@ socket.onmessage = function (e) {
       handleDeleteSpecification(params.service_name, params.tb_cause);
       break;
     case Intent.EDIT_SPECIFICATION_LOSS:
-      handleEditSpecification(params.service_name, params.tb_cause)
+      handleEditSpecification(params.service_name, params.tb_cause);
       break;
     case Intent.EDIT_SPECIFICATION_RECOVERY_TIME:
-      handleEditSpecification(params.service_name, params.tb_cause)
+      handleEditSpecification(params.service_name, params.tb_cause);
       break;
     default:
       break;
@@ -37,11 +57,35 @@ socket.onmessage = function (e) {
   ) {
     highlightService(params.service_name);
   }
-};
+}
 
-socket.onclose = function (e) {
-  console.error('Chat socket closed');
-};
+function handleServiceUpdate(data) {
+  const id = data.id;
+  const name = data.name;
+  const system = data.system;
+  const endpoints = data.endoints;
+  const violationDetected = data.violation_detected;
+
+  console.log('Received service-update for service ' + name);
+
+  if (services != null && services != undefined) {
+    const service = services.filter((service) => {
+      return service.id == id;
+    })[0];
+
+    service.name = name;
+    service.system = system;
+    service.endoints = endpoints;
+    service.violation_detected = violationDetected;
+
+    const fillColor = violationDetected ? 'orange' : '#74abed';
+    d3.selectAll('#service-rect')
+      .filter(function (d) {
+        return d.id == id;
+      })
+      .style('fill', fillColor);
+  }
+}
 
 function highlightService(serviceName) {
   // deselect possible selected services
@@ -72,10 +116,7 @@ function handleDeleteSpecification(service_name, cause) {
   }
 
   // Check if specification is visualized right now
-  if (
-    service_name === selectedService.name &&
-    cause === specification.cause
-  ) {
+  if (service_name === selectedService.name && cause === specification.cause) {
     var deleteBtn = document.getElementById('deleteSpecBtn');
     var editBtn = document.getElementById('editSpecBtn');
     var addBtn = document.getElementById('addSpecBtn');
@@ -93,11 +134,8 @@ function handleEditSpecification(service_name, cause) {
   }
 
   // Check if specification is visualized right now
-  if (
-    service_name === selectedService.name &&
-    cause === specification.cause
-  ) {
+  if (service_name === selectedService.name && cause === specification.cause) {
     removeSpecificationPath();
-    fetchSpecification(selectedService.id, cause)
+    fetchSpecification(selectedService.id, cause);
   }
 }
