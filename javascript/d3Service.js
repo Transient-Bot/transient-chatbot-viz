@@ -419,6 +419,15 @@ function drawSpecification(specification) {
   }
 }
 
+function removeDataViz() {
+  d3.selectAll('#data-svg').remove();
+  serviceData = null;
+}
+
+function removeLossViz() {
+  d3.selectAll('#loss-svg').remove();
+}
+
 function removeSpecificationPath() {
   d3.selectAll('#specification-line').remove();
   d3.selectAll('#specification-line-loss').remove();
