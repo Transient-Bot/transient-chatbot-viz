@@ -298,6 +298,10 @@ function drawSpecification(specification) {
   var transientBehaviorEndpoint = -1.0;
   for (var i = 0; i < serviceData.length; i++) {
     var elem = serviceData[i];
+
+    if (parseInt(elem.time) === 600) {
+      console.log('this');
+    }
     
     if (elem.time > specificationEndpoint && elem.time > transientBehaviorEndpoint) {
       if (elem.qos < expected_qos) {
@@ -352,6 +356,10 @@ function drawSpecification(specification) {
     .attr('y2', function (d) { return lossY(max_loss); });
 
   function isInitialLoss(index) {
+    if (index + 1 >= serviceData.length) {
+      return false;
+    }
+
     var med = getMedianOfNextValues(serviceData, index);
     if (med < qos_threshold) {
       console.log('Found initial loss at ' + serviceData[index].time + ' with a median qos of ' + med + ' (spec: ' + specification.max_initial_loss + ')');
@@ -361,18 +369,6 @@ function drawSpecification(specification) {
   }
 
   function getInitialLossIndex(index) {
-    // var nextValues = getNextValues(serviceData, index);
-    // var minimum = serviceData[index];
-    // var indexMinimum = index;
-
-    // for (var j = 0; j < nextValues.length; j++) {
-    //   if (nextValues[j].qos < minimum.qos) {
-    //     minimum = nextValues[j];
-    //     indexMinimum = index + j;
-    //   }
-    // }
-
-    // return indexMinimum;
     if (index > 0) {
       return index - 1;
     }
@@ -393,9 +389,18 @@ function drawSpecification(specification) {
   }
 
   function getMedianOfNextValues(data, startIndex) {
-    var nextValues = getNextValues(data, startIndex);
-    var qosValues = nextValues.map((service) => service.qos);
-    return median(qosValues);
+    const current = data[startIndex];
+    const next = data[startIndex + 1];
+
+    var qos = [];
+    if (next.time > current.time + 5) {
+      qos = interpolate(current, next);
+    } else {
+      nextValus = getNextValues(data, startIndex);
+      qos = nextValues.map((service) => service.qos);
+    }
+
+    return median(qos);
   }
 
   function getNextValues(data, startIndex) {
@@ -415,7 +420,19 @@ function drawSpecification(specification) {
     if (values.length % 2) {
       return values[center];
     }
-    return values[half - 1] + values[half] / 2.0;
+    return values[center - 1] + values[center] / 2.0;
+  }
+
+  function interpolate(first, last) {
+    var points = [];
+    for (var i = 0; i < 5; i++) {
+      points.push(parseInt(first.time) + i);
+    }
+
+    var x = [parseInt(first.time), parseInt(last.time)];
+    var y = [first.qos, last.qos];
+
+    return everpolate.linear(points, x, y);
   }
 }
 
