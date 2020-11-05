@@ -354,24 +354,29 @@ function drawSpecification(specification) {
   function isInitialLoss(index) {
     var med = getMedianOfNextValues(serviceData, index);
     if (med < qos_threshold) {
+      console.log('Found initial loss at ' + serviceData[index].time + ' with a median qos of ' + med + ' (spec: ' + specification.max_initial_loss + ')');
       return true;
     }
     return false;
   }
 
   function getInitialLossIndex(index) {
-    var nextValues = getNextValues(serviceData, index);
-    var minimum = serviceData[index];
-    var indexMinimum = index;
+    // var nextValues = getNextValues(serviceData, index);
+    // var minimum = serviceData[index];
+    // var indexMinimum = index;
 
-    for (var j = 0; j < nextValues.length; j++) {
-      if (nextValues[j].qos < minimum.qos) {
-        minimum = nextValues[j];
-        indexMinimum = index + j;
-      }
+    // for (var j = 0; j < nextValues.length; j++) {
+    //   if (nextValues[j].qos < minimum.qos) {
+    //     minimum = nextValues[j];
+    //     indexMinimum = index + j;
+    //   }
+    // }
+
+    // return indexMinimum;
+    if (index > 0) {
+      return index - 1;
     }
-
-    return indexMinimum;
+    return index;
   }
 
   function getTransientBehaviorEndpoint(data, startIndex) {
