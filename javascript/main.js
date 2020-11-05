@@ -7,7 +7,7 @@ var specificationIsHidden = true;
 
 // Open websocket
 const socket = new WebSocket(
-  "ws://transient-chatbot-service.herokuapp.com/ws/test/"
+  "wss://transient-chatbot-service.herokuapp.com/ws/test/"
 );
 
 // Fetch the components of the architecture diagram
