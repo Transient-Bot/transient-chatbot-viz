@@ -35,7 +35,7 @@ function handleVisInteraction(data) {
       }
       break;
     case Intent.SHOW_SPECIFIACTION:
-      showSpecification(params.tb_cause);
+      handleShowSpecification(params.service_name, params.tb_cause);
       break;
     case Intent.ADD_SPECIFICATION:
       handleAddSpecification(params.service_name, params.tb_cause);
@@ -121,14 +121,14 @@ function handleDeleteSpecification(service_name, cause) {
   // Check if specification is visualized right now
   if (service_name === selectedService.name && cause === specification.cause) {
     var deleteBtn = document.getElementById("deleteSpecBtn");
-    var editBtn = document.getElementById("editSpecBtn");
+    // var editBtn = document.getElementById("editSpecBtn");
     var addBtn = document.getElementById("addSpecBtn");
     var lossContainer = document.getElementById("loss-viz-container");
 
     removeSpecificationPath();
     removeLossViz();
     deleteBtn.style.display = "none";
-    editBtn.style.display = "none";
+    // editBtn.style.display = "none";
     addBtn.style.display = "inline";
     lossContainer.style.display = "none";
   }
@@ -161,13 +161,26 @@ function handleAddSpecification(service_name, cause) {
         const lossContainer = document.getElementById("loss-viz-container");
         const addBtn = document.getElementById("addSpecBtn");
         const deleteBtn = document.getElementById("deleteSpecBtn");
-        const editBtn = document.getElementById("editSpecBtn");
+        // const editBtn = document.getElementById("editSpecBtn");
 
         lossContainer.style.display = "none";
         deleteBtn.style.display = "none";
-        editBtn.style.display = "none";
+        // editBtn.style.display = "none";
         addBtn.style.display = "inline";
       }
     });
+  }
+}
+
+function handleShowSpecification(service_name, cause) {
+  if (service_name === null || cause === null) {
+    return;
+  }
+
+  if (selectedService.name !== service_name) {
+    highlightService(service_name);
+  }
+  if (specificationIsHidden) {
+    showSpecification(cause);
   }
 }

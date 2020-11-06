@@ -49,11 +49,11 @@ document.getElementById('causes').addEventListener('change', (e) => {
       const lossContainer = document.getElementById('loss-viz-container');
       const addBtn = document.getElementById('addSpecBtn');
       const deleteBtn = document.getElementById('deleteSpecBtn');
-      const editBtn = document.getElementById('editSpecBtn');
+      // const editBtn = document.getElementById('editSpecBtn');
 
       lossContainer.style.display = 'none';
       deleteBtn.style.display = 'none';
-      editBtn.style.display = 'none';
+      // editBtn.style.display = 'none';
       addBtn.style.display = 'inline';
     }
   });
@@ -136,7 +136,6 @@ function populateEndpointsSelect(service) {
 function showSpecification(tb_cause) {
   var btn = document.getElementById('specification-toggle');
   var causesContainer = document.getElementById('causes-select-container');
-  var lossContainer = document.getElementById('loss-viz-container');
   var cause = document.getElementById('causes').value;
 
   if (tb_cause !== null) {
@@ -158,7 +157,7 @@ function hideSpecification() {
   var btn = document.getElementById('specification-toggle');
   var addBtn = document.getElementById('addSpecBtn');
   var deleteBtn = document.getElementById('deleteSpecBtn');
-  var editBtn = document.getElementById('editSpecBtn');
+  // var editBtn = document.getElementById('editSpecBtn');
   var causesContainer = document.getElementById('causes-select-container');
   var lossContainer = document.getElementById('loss-viz-container');
 
@@ -166,7 +165,7 @@ function hideSpecification() {
   causesContainer.style.display = 'none';
   addBtn.style.display = 'none';
   deleteBtn.style.display = 'none';
-  editBtn.style.display = 'none';
+  // editBtn.style.display = 'none';
   btn.innerHTML = 'Show specification';
   specificationIsHidden = true;
   removeSpecificationPath();
@@ -191,14 +190,14 @@ function toggleDataVizContainer() {
 
 function handleSpecification(spec) {
   var deleteBtn = document.getElementById('deleteSpecBtn');
-  var editBtn = document.getElementById('editSpecBtn');
+  // var editBtn = document.getElementById('editSpecBtn');
   var addBtn = document.getElementById('addSpecBtn');
   var lossContainer = document.getElementById('loss-viz-container');
 
   if (spec != null && spec != undefined) {
     specification = spec;
     deleteBtn.style.display = 'inline';
-    editBtn.style.display = 'inline';
+    // editBtn.style.display = 'inline';
     addBtn.style.display = 'none';
     lossContainer.style.display = 'block';
 
@@ -207,7 +206,7 @@ function handleSpecification(spec) {
   } else {
     addBtn.style.display = 'inline';
     deleteBtn.style.display = 'none';
-    editBtn.style.display = 'none';
+    // editBtn.style.display = 'none';
     lossContainer.style.display = 'none';
   }
 }
@@ -217,7 +216,7 @@ function deleteSpecification() {
     return;
   }
   var deleteBtn = document.getElementById('deleteSpecBtn');
-  var editBtn = document.getElementById('editSpecBtn');
+  // var editBtn = document.getElementById('editSpecBtn');
   var addBtn = document.getElementById('addSpecBtn');
   var lossContainer = document.getElementById('loss-viz-container');
 
@@ -233,7 +232,7 @@ function deleteSpecification() {
     deleteSpecificationRequest(specification.id);
     removeSpecificationPath();
     deleteBtn.style.display = 'none';
-    editBtn.style.display = 'none';
+    // editBtn.style.display = 'none';
     addBtn.style.display = 'inline';
     lossContainer.style.display = 'none';
   }
