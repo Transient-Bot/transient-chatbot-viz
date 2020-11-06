@@ -3,26 +3,26 @@ socket.onmessage = function (e) {
   const messageType = data.type;
 
   switch (messageType) {
-    case 'interaction':
+    case "interaction":
       handleVisInteraction(data);
       break;
-    case 'service.update':
+    case "service.update":
       handleServiceUpdate(data);
       break;
     default:
-      console.log('Received message but cannot handle it: ' + data.type);
+      console.log("Received message but cannot handle it: " + data.type);
       break;
   }
 };
 
 socket.onclose = function (e) {
-  console.error('Chat socket closed');
+  console.error("Chat socket closed");
 };
 
 function handleVisInteraction(data) {
   const intent = data.intent;
   const params = data.params;
-  console.log('Received intent: ' + intent + ' with param: ' + params);
+  console.log("Received intent: " + intent + " with param: " + params);
 
   if (intent === null || params === null) {
     return;
@@ -37,21 +37,24 @@ function handleVisInteraction(data) {
     case Intent.SHOW_SPECIFIACTION:
       showSpecification(params.tb_cause);
       break;
+    case Intent.ADD_SPECIFICATION:
+      handleAddSpecification(params.service_name, params.tb_cause);
+      break;
     case Intent.DELETE_SPECIFICATION:
       handleDeleteSpecification(params.service_name, params.tb_cause);
       break;
     case Intent.EDIT_SPECIFICATION_LOSS:
-      handleEditSpecification(params.service_name, params.tb_cause);
+      handleAddSpecification(params.service_name, params.tb_cause);
       break;
     case Intent.EDIT_SPECIFICATION_RECOVERY_TIME:
-      handleEditSpecification(params.service_name, params.tb_cause);
+      handleAddSpecification(params.service_name, params.tb_cause);
       break;
     default:
       break;
   }
 
   if (
-    intent === 'Select Service' &&
+    intent === "Select Service" &&
     params !== null &&
     params.service_name !== null
   ) {
@@ -66,7 +69,7 @@ function handleServiceUpdate(data) {
   const endpoints = data.endoints;
   const violationDetected = data.violation_detected;
 
-  console.log('Received service-update for service ' + name);
+  console.log("Received service-update for service " + name);
 
   if (services != null && services != undefined) {
     const service = services.filter((service) => {
@@ -78,26 +81,26 @@ function handleServiceUpdate(data) {
     service.endoints = endpoints;
     service.violation_detected = violationDetected;
 
-    const fillColor = violationDetected ? 'orange' : '#74abed';
-    d3.selectAll('#service-rect')
+    const fillColor = violationDetected ? "orange" : "#74abed";
+    d3.selectAll("#service-rect")
       .filter(function (d) {
         return d.id == id;
       })
-      .style('fill', fillColor);
+      .style("fill", fillColor);
   }
 }
 
 function highlightService(serviceName) {
   // deselect possible selected services
-  d3.selectAll('#service-rect').style('stroke', 'none');
+  d3.selectAll("#service-rect").style("stroke", "none");
 
   // select service
-  d3.selectAll('#service-rect')
+  d3.selectAll("#service-rect")
     .filter(function (d) {
       return d.name === serviceName;
     })
-    .style('stroke', 'red')
-    .attr('stroke-width', '4.0');
+    .style("stroke", "red")
+    .attr("stroke-width", "4.0");
 
   // load data and create chart for service
   var filteredServices = services.filter((service) => {
@@ -117,25 +120,54 @@ function handleDeleteSpecification(service_name, cause) {
 
   // Check if specification is visualized right now
   if (service_name === selectedService.name && cause === specification.cause) {
-    var deleteBtn = document.getElementById('deleteSpecBtn');
-    var editBtn = document.getElementById('editSpecBtn');
-    var addBtn = document.getElementById('addSpecBtn');
+    var deleteBtn = document.getElementById("deleteSpecBtn");
+    var editBtn = document.getElementById("editSpecBtn");
+    var addBtn = document.getElementById("addSpecBtn");
+    var lossContainer = document.getElementById("loss-viz-container");
 
     removeSpecificationPath();
-    deleteBtn.style.display = 'none';
-    editBtn.style.display = 'none';
-    addBtn.style.display = 'inline';
+    removeLossViz();
+    deleteBtn.style.display = "none";
+    editBtn.style.display = "none";
+    addBtn.style.display = "inline";
+    lossContainer.style.display = "none";
   }
 }
 
-function handleEditSpecification(service_name, cause) {
+function handleAddSpecification(service_name, cause) {
   if (service_name === null || cause === null) {
     return;
   }
 
   // Check if specification is visualized right now
-  if (service_name === selectedService.name && cause === specification.cause) {
+  if (
+    service_name === selectedService.name &&
+    !specificationIsHidden &&
+    cause === document.getElementById("causes").value
+  ) {
     removeSpecificationPath();
-    fetchSpecification(selectedService.id, cause);
+    removeLossViz();
+    fetchSpecification(selectedService.id, cause).then((res) => {
+      if (res != null) {
+        const callId = document.getElementById("endpoints").value;
+        fetchServiceData(selectedService.id, callId).then((data) => {
+          if (data != null) {
+            serviceData = data;
+            createDataGraph(serviceData);
+          }
+          handleSpecification(res);
+        });
+      } else {
+        const lossContainer = document.getElementById("loss-viz-container");
+        const addBtn = document.getElementById("addSpecBtn");
+        const deleteBtn = document.getElementById("deleteSpecBtn");
+        const editBtn = document.getElementById("editSpecBtn");
+
+        lossContainer.style.display = "none";
+        deleteBtn.style.display = "none";
+        editBtn.style.display = "none";
+        addBtn.style.display = "inline";
+      }
+    });
   }
 }
