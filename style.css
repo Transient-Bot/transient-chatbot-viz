@@ -32,37 +32,47 @@ text {
     margin-right: 12px;
 }
 
+.btn-show {
+    background-color:darkgray !important;
+    border-color:darkgray !important;
+}
+
+.btn-show:hover {
+    background-color: gray !important;
+    border-color: gray !important;
+}
+
 .btn-add {
-    background-color: green !important;
-    border-color: green !important;
+    background-color:darkgray !important;
+    border-color:darkgray !important;
     display: none;
 }
 
 .btn-delete {
-    background-color: red !important;
-    border-color: red !important;
+    background-color: darkgray !important;
+    border-color:darkgray !important;
     display: none;
 }
 
 .btn-edit {
-    background-color: orange !important;
-    border-color: orange !important;
+    background-color: darkgray !important;
+    border-color: darkgray !important;
     display: none;
 }
 
 .btn-add:hover {
-    background-color: darkgreen !important;
-    border-color: darkgreen !important;
+    background-color:gray !important;
+    border-color: gray !important;
 }
 
 .btn-delete:hover {
-    background-color: darkred !important;
-    border-color: darkred !important;
+    background-color: gray !important;
+    border-color: gray !important;
 }
 
 .btn-edit:hover {
-    background-color: darkorange !important;
-    border-color: darkorange !important;
+    background-color: gray !important;
+    border-color: gray !important;
 }
 
 .act-ind {
