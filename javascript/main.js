@@ -109,8 +109,8 @@ function populateEndpointsSelect(service) {
     var serviceContainer = document.getElementById('service-viz-container');
     serviceContainer.style.display = 'none';
   } else {
-    if (service.name === 'loon-service2') {
-      // Service loon-service2 has only one endpoint with callid 5
+    if (service.name === 'payslip2') {
+      // Service payslip2 has only one endpoint with callid 5
       var option = document.createElement('option');
       option.value = 5;
       option.text = service.endpoints[0];
