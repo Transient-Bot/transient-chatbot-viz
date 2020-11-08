@@ -116,6 +116,15 @@ function createDataGraph(serviceData) {
   // Remove old graphs
   d3.selectAll("#data-svg").remove();
 
+  // Fix data
+  serviceData.forEach(function (d) {
+    d.time = parseInt(d.time);
+    d.qos = parseFloat(d.qos);
+    d.failureLoss = parseFloat(d.failureLoss);
+    d.deploymentLoss = parseFloat(d.deploymentLoss);
+    d.loadBalancingLoss = parseFloat(d.loadBalancingLoss);
+  });
+
   // Append svg object
   var dataSvg = d3
     .select("#data_viz")
@@ -136,7 +145,7 @@ function createDataGraph(serviceData) {
       })
     )
     .range([0, width])
-    .nice();
+    // .nice();
   var xGrid = dataSvg
     .append("g")
     .attr("class", "grid")
@@ -343,10 +352,6 @@ function drawSpecification(specification) {
   for (var i = 0; i < serviceData.length; i++) {
     var elem = serviceData[i];
 
-    if (parseInt(elem.time) === 600) {
-      console.log("this");
-    }
-
     if (
       elem.time > specificationEndpoint &&
       elem.time > transientBehaviorEndpoint
@@ -451,14 +456,18 @@ function drawSpecification(specification) {
   }
 
   function getMedianOfNextValues(data, startIndex) {
+    if (startIndex + 1 >= data.length) {
+      return data[startIndex].qos
+    }
+
     const current = data[startIndex];
     const next = data[startIndex + 1];
 
     var qos = [];
-    if (next.time > current.time + 5) {
+    if (parseInt(next.time) > parseInt(current.time) + 5) {
       qos = interpolate(current, next);
     } else {
-      nextValus = getNextValues(data, startIndex);
+      nextValues = getNextValues(data, startIndex);
       qos = nextValues.map((service) => service.qos);
     }
 
@@ -518,13 +527,6 @@ function drawTransientLossGraph() {
   // Remove old graphs
   d3.selectAll("#loss-svg").remove();
 
-  // Fix data
-  serviceData.forEach(function (d) {
-    d.failureLoss = parseFloat(d.failureLoss);
-    d.deploymentLoss = parseFloat(d.deploymentLoss);
-    d.loadBalancingLoss = parseFloat(d.loadBalancingLoss);
-  });
-
   // Append svg object
   var lossSvg = d3
     .select("#loss_viz")
@@ -545,7 +547,7 @@ function drawTransientLossGraph() {
       })
     )
     .range([0, width])
-    .nice();
+    // .nice();
   var xGrid = lossSvg
     .append("g")
     .attr("class", "grid")
