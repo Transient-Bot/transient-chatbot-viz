@@ -79,9 +79,9 @@ function createArchitectureGraph() {
           return d.id;
         })
         .links(dependencies)
-        .distance(200)
+        .distance(10)
     )
-    .force("charge", d3.forceManyBody().strength(-300).distanceMax([150]))
+    .force("charge", d3.forceManyBody().strength(-300).distanceMax(150))
     .force("center", d3.forceCenter(width / 2, height / 2))
     .force("collision", d3.forceCollide(rectWidth))
     .on("end", ticked);
@@ -360,9 +360,12 @@ function drawSpecification(specification) {
         if (isInitialLoss(i)) {
           var initialLossIndex = getInitialLossIndex(i);
           var initialLoss = serviceData[initialLossIndex];
+          specificationEndpoint = initialLoss.time + parseFloat(max_recovery_time);
+
           transientBehaviorEndpoint = getTransientBehaviorEndpoint(
             serviceData,
-            initialLossIndex
+            initialLossIndex,
+            specificationEndpoint
           );
 
           data.push({ qos: 100, time: initialLoss.time });
@@ -371,8 +374,10 @@ function drawSpecification(specification) {
             time: initialLoss.time,
           });
 
-          var startpoint = parseFloat(data[data.length - 1].time);
-          specificationEndpoint = startpoint + parseFloat(max_recovery_time);
+          if (specificationEndpoint > transientBehaviorEndpoint) {
+            transientBehaviorEndpoint = specificationEndpoint;
+          }
+
           data.push({ qos: 100, time: specificationEndpoint });
         }
       }
@@ -442,9 +447,13 @@ function drawSpecification(specification) {
     return index;
   }
 
-  function getTransientBehaviorEndpoint(data, startIndex) {
+  function getTransientBehaviorEndpoint(data, startIndex, specificationEndpoint) {
     for (var i = startIndex + 1; i < data.length; i++) {
       var measurement = data[i];
+      if (measurement.time < specificationEndpoint) {
+        continue;
+      }
+
       if (measurement.qos >= expected_qos) {
         var med = getMedianOfNextValues(data, i);
         if (med >= qos_threshold) {
