@@ -180,7 +180,5 @@ function handleShowSpecification(service_name, cause) {
   if (selectedService.name !== service_name) {
     highlightService(service_name);
   }
-  if (specificationIsHidden) {
-    showSpecification(cause);
-  }
+  showSpecification(cause);
 }
