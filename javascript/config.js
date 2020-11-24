@@ -1,4 +1,5 @@
 const baseUrl = 'https://transient-chatbot-service.herokuapp.com/api/';
+const socketUrl = 'wss://transient-chatbot-service.herokuapp.com/ws/test/';
 const servicesPath = 'services/';
 const dependenciesPath = 'dependencies/';
 const serviceDataPath = 'servicedata/';
