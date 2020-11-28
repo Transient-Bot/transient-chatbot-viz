@@ -9,3 +9,6 @@ https://transient-bot.github.io/transient-chatbot-viz/
 3. Host site on webserver
     
     For example: ```python -m http.server```
+
+### Remark about the Dialogflow Messenger
+You will have to replace the agent-id attribute of the dialogflow messenger element in ```index.html``` with the id of your agent.
