@@ -1,5 +1,5 @@
 async function fetchServices() {
-  const system = document.getElementById('systems').value;
+  const system = 'accounting-system';
   const scenario = document.getElementById('scenarios').value;
 
   try {
@@ -14,7 +14,7 @@ async function fetchServices() {
 }
 
 async function fetchDependencies() {
-  const system = document.getElementById('systems').value;
+  const system = 'accounting-system';
   const scenario = document.getElementById('scenarios').value;
 
   try {

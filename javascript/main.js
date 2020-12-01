@@ -57,11 +57,6 @@ document.getElementById('causes').addEventListener('change', (e) => {
   });
 });
 
-// Change architecture visualization when a system is selected
-document.getElementById('systems').addEventListener('change', (e) => {
-  changeArchitectureViz();
-});
-
 // change architecture visualization when a scenario is selected
 document.getElementById('scenarios').addEventListener('change', (e) => {
   changeArchitectureViz();
